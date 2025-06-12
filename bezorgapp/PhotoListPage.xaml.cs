@@ -9,7 +9,7 @@ namespace bezorgapp
             InitializeComponent();
             LoadPhotosAsync();
         }
-        
+
         private async void OnViewPhotosClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new PhotoListPage());

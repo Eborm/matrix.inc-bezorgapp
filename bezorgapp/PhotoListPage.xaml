@@ -8,5 +8,5 @@
             <Button Text="Bekijk foto's" Clicked="OnViewPhotosClicked" />
         </VerticalStackLayout>
     </ScrollView>
-
+    
 </ContentPage>
