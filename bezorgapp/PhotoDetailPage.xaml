@@ -1,0 +1,10 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="bezorgapp.PhotoDetailPage"
+             Title="Foto detail">
+    <ScrollView>
+        <VerticalStackLayout Padding="10" Spacing="10">
+            <Image x:Name="DetailImage" Aspect="AspectFit" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
