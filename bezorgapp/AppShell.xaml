@@ -6,20 +6,12 @@
     xmlns:local="clr-namespace:bezorgapp"
     FlyoutBehavior="Flyout">
 
-    <TabBar>
-        <Tab Title="Home" Icon="home.png">
-            <ShellContent
-                Title="Home"
-                ContentTemplate="{DataTemplate local:MainPage}"
-                Route="MainPage" />
-        </Tab>
-        
-        <Tab Title="Foto's" Icon="photo.png">
-            <ShellContent
-                Title="Foto Galerij"
-                ContentTemplate="{DataTemplate local:PhotoGalleryPage}"
-                Route="PhotoGalleryPage" />
-        </Tab>
-    </TabBar>
+    <FlyoutItem Title="Home" Icon="home.png">
+        <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Create Photo">
+        <ShellContent Title="Photos" ContentTemplate="{DataTemplate local:PhotoGalleryPage}" />
+    </FlyoutItem>
 
 </Shell>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="bezorgapp.CreatePicture">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+            
+            <VerticalStackLayout Padding="20" Spacing="20">
+                <Image x:Name="CapturedImage" HeightRequest="100" />
+            </VerticalStackLayout>
+            
+            <Button Text="Maak en upload foto" Clicked="OnTakePhotoClicked" />
+            
+            <Button Text="Kies foto uit galerij" Clicked="OnPickPhotoClicked" />
+            
+            <Button Text="Toon foto's" Clicked="OnShowGalleryClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
