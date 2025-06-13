@@ -23,6 +23,8 @@
             
             <Button Text="Maak en upload foto" Clicked="OnTakePhotoClicked" />
             
+            <Button Text="Kies foto uit galerij" Clicked="OnPickPhotoClicked" />
+            
             <Button Text="Toon foto's" Clicked="OnShowGalleryClicked" />
         </VerticalStackLayout>
     </ScrollView>

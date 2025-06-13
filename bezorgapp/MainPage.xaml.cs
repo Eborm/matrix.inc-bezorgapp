@@ -23,8 +23,7 @@
                 {
                     var stream = await photo.OpenReadAsync();
                     CapturedImage.Source = ImageSource.FromStream(() => stream);
-
-                    // Upload hier
+                    
                     await UploadPhotoAsync(photo);
                 }
             }
@@ -86,5 +85,30 @@
                 Preferences.Set("DarkModeEnabled", e.Value);
             }
         }
+        
+        private async void OnPickPhotoClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var photo = await MediaPicker.PickPhotoAsync();
+
+                if (photo != null)
+                {
+                    var stream = await photo.OpenReadAsync();
+                    CapturedImage.Source = ImageSource.FromStream(() => stream);
+            
+                    await UploadPhotoAsync(photo);
+                }
+            }
+            catch (PermissionException)
+            {
+                await DisplayAlert("Fout", "Geen toestemming voor toegang tot de fotogalerij.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Fout", $"Er ging iets mis: {ex.Message}", "OK");
+            }
+        }
+
     }
 }
