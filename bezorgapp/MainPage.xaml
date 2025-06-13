@@ -7,6 +7,16 @@
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
+            <HorizontalStackLayout Spacing="10">
+                <Label 
+                    Text="Dark Mode"
+                    VerticalOptions="Center" />
+                <Switch 
+                    x:Name="ThemeSwitch"
+                    Toggled="OnThemeToggled"
+                    VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            
             <VerticalStackLayout Padding="20" Spacing="20">
                 <Image x:Name="CapturedImage" HeightRequest="100" />
             </VerticalStackLayout>
@@ -16,6 +26,4 @@
             <Button Text="Toon foto's" Clicked="OnShowGalleryClicked" />
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
-

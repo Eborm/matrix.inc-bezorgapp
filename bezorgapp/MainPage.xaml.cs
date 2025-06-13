@@ -5,6 +5,12 @@
         public MainPage()
         {
             InitializeComponent();
+            bool isDarkMode = Preferences.Get("DarkModeEnabled", false);
+            ThemeSwitch.IsToggled = isDarkMode;
+            if (Application.Current != null)
+            {
+                Application.Current.UserAppTheme = isDarkMode ? AppTheme.Dark : AppTheme.Light;
+            }
         }
         
         private async void OnTakePhotoClicked(object sender, EventArgs e)
@@ -71,7 +77,14 @@
         {
             await Navigation.PushAsync(new PhotoGalleryPage());
         }
+        
+        private void OnThemeToggled(object sender, ToggledEventArgs e)
+        {
+            if (Application.Current != null)
+            {
+                Application.Current.UserAppTheme = e.Value ? AppTheme.Dark : AppTheme.Light;
+                Preferences.Set("DarkModeEnabled", e.Value);
+            }
+        }
     }
-
-    
 }
