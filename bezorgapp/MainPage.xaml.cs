@@ -71,6 +71,10 @@
         {
             await Navigation.PushAsync(new PhotoGalleryPage());
         }
+        private async void OnShowMapClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new MapPage());
+        }
     }
 
     

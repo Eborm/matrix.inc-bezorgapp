@@ -14,6 +14,7 @@
             <Button Text="Maak en upload foto" Clicked="OnTakePhotoClicked" />
             
             <Button Text="Toon foto's" Clicked="OnShowGalleryClicked" />
+            <Button Text="Test MAp" Clicked="OnShowMapClicked" />
         </VerticalStackLayout>
     </ScrollView>
 
