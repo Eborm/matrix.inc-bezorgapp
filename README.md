@@ -1,1 +1,1 @@
-Bezorg app gemaakt voor bezorgers in .NET MAUI
+Bezorg app gemaakt voor bezorgers met .NET MAUI
