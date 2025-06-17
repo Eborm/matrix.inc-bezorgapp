@@ -8,8 +8,8 @@ namespace bezorgapp;
 
 public partial class MapPage : ContentPage
 {
-    private readonly string orsApiKey = "5b3ce3597851110001cf6248969d1894c7d94094bab990a29141afca";
-    private readonly string bezorgappApiKey = " 7a38a102-e061-4679-9919-ea47586d7fa3";
+    private readonly string orsApiKey = "EnterAPIKEY";
+    private readonly string bezorgappApiKey = " EnterAPIKEY";
     private readonly string bezorgappApiURL = "http://51.137.100.120:5000/api/";
     private readonly Dictionary<string, string> deliveryLocations = new Dictionary<string, string>
     {
@@ -108,7 +108,7 @@ public partial class MapPage : ContentPage
 
             foreach (var order in orders)
             {
-                // Alleen orders van vóór vandaag
+                // Alleen orders van vÃ³Ã³r vandaag
                 if (order.OrderDate.Date >= today)
                     continue;
 
