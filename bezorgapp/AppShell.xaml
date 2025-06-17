@@ -4,13 +4,18 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:bezorgapp"
-    Shell.FlyoutBehavior="Disabled"
-    Title="bezorgapp">
+    FlyoutBehavior="Flyout">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <FlyoutItem Title="Home" Icon="home.png">
+        <ShellContent Title="                    Home" ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Create Photo">
+        <ShellContent Title="Photos" ContentTemplate="{DataTemplate local:CreatePicture}" />
+    </FlyoutItem>
+    
+    <FlyoutItem Title="Settings">
+        <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" />
+    </FlyoutItem>
 
 </Shell>
-
