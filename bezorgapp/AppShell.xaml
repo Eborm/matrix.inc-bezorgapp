@@ -11,7 +11,7 @@
     </FlyoutItem>
 
     <FlyoutItem Title="Create Photo">
-        <ShellContent Title="Photos" ContentTemplate="{DataTemplate local:PhotoGalleryPage}" />
+        <ShellContent Title="Photos" ContentTemplate="{DataTemplate local:CreatePicture}" />
     </FlyoutItem>
 
 </Shell>
