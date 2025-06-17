@@ -17,20 +17,6 @@
             Spacing="25"
             Margin="0,20,0,0">
             
-            
-            <Label 
-                Text="API Test"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
-
-            <Button 
-                x:Name="ApiTestButton"
-                Text="Test API Verbinding"
-                SemanticProperties.Hint="Klik om de API verbinding te testen"
-                Clicked="OnApiTestButtonClicked"
-                HorizontalOptions="Center" />
-            
             <Button 
                 Text="Bekijk Orders"
                 Clicked="OnBekijkOrdersClicked"
