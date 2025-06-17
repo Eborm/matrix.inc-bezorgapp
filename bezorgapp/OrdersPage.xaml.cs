@@ -16,6 +16,10 @@ namespace bezorgapp
         {
             base.OnAppearing();
             var orders = await _apiService.GetOrdersAsync();
+            foreach (var order in orders)
+            {
+                order.DeliveryStateState = await _apiService.GetDeliveryStateByIdAsync(order.Id);
+            }
             OrdersCollectionView.ItemsSource = orders;
         }
     }

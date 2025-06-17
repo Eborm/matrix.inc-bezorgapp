@@ -21,4 +21,6 @@ public class Order
 
     [JsonPropertyName("deliveryStates")]
     public List<object> DeliveryStates { get; set; }
+
+    public int DeliveryStateState { get; set; } // 0 = In afwachting, 1 = Onderweg, 2 = Afgeleverd
 }

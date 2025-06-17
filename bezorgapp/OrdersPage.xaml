@@ -15,13 +15,13 @@
                             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
                                 <Label Grid.Column="0" Text="{Binding Id, StringFormat='Order ID: {0}'}" FontAttributes="Bold" FontSize="16"/>
                                 <Label Grid.Column="1" Text="{Binding OrderDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Gray" HorizontalOptions="End"/>
+                                <Label Text="{Binding DeliveryStateState, StringFormat='{OrderState: y}'}" TextColor="Gray" HorizontalOptions="End"/>
                             </Grid>
 
                             <BoxView HeightRequest="1" Color="LightGray"/>
 
                             <Label Text="{Binding Customer.Name}" FontAttributes="Bold" FontSize="14"/>
                             <Label Text="{Binding Customer.Address}"/>
-            
                         </VerticalStackLayout>
                     </Frame>
                 </DataTemplate>

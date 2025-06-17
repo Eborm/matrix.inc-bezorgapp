@@ -10,7 +10,7 @@ namespace bezorgapp.Services;
 public class ApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey = "Enter API KEY";
+    private readonly string _apiKey = "7a38a102-e061-4679-9919-ea47586d7fa3";
     private readonly string _baseUrl = "http://51.137.100.120:5000";
 
     public ApiService()
@@ -20,15 +20,13 @@ public class ApiService
         _httpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
     }
 
-    private async Task<IEnumerable<DeliveryState>> GetDeliveryStateByIdAsync(int Id)
+    public async Task<int> GetDeliveryStateByIdAsync(int Id)
     {
-        var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
         DeliveryState OrderDeliveryState;
 
         try
         {
-            var response = await httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
+            var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
             var jsonResponse = await response.Content.ReadAsStringAsync();
             var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
             {
@@ -43,13 +41,22 @@ public class ApiService
             {
                 WriteIndented = true
             });
-            return statesForOrder;
+            if (statesForOrder.Count == 2)
+            {
+                return 1;
+            }
+            else if (statesForOrder.Count == 3)
+            {
+                return 2;
+            }
+
 
         }
         catch (Exception ex)
         {
-            return new List<DeliveryState>();   
+            return 0;   
         }
+        return 0;
     }
 
     public async Task<List<Order>> GetOrdersAsync()
