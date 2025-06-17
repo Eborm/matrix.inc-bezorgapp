@@ -2,6 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="bezorgapp.MainPage"
              Title="                     Home">
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="scan.avif"
+                     Order="Primary"
+                     Priority="0"
+                     Clicked="OnActionButtonClicked" />
+    </ContentPage.ToolbarItems>
 
     <VerticalStackLayout
         Spacing="0">

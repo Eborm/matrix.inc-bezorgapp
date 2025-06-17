@@ -11,5 +11,10 @@
         {
             await Navigation.PushAsync(new OrdersPage());
         }
+        
+        private void OnActionButtonClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new BarcodeScannerPage());
+        }
     }
 }
