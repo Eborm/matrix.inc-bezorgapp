@@ -28,10 +28,24 @@
 		</array>
 		<key>XSAppIconAssets</key>
 		<string>Assets.xcassets/appicon.appiconset</string>
-		
+
 		<key>NSCameraUsageDescription</key>
 		<string>We hebben toegang tot de camera nodig om foto's te maken.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>We hebben toegang tot je fotobibliotheek om foto's te selecteren of op te slaan.</string>
+
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSExceptionDomains</key>
+			<dict>
+				<key>51.137.100.120</key>
+				<dict>
+					<key>NSIncludesSubdomains</key>
+					<true/>
+					<key>NSThirdPartyExceptionAllowsInsecureHTTPLoads</key>
+					<true/>
+				</dict>
+			</dict>
+		</dict>
 	</dict>
 </plist>
