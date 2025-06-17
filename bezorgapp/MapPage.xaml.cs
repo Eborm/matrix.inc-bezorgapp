@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.Tracing;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -19,38 +20,52 @@ public partial class MapPage : ContentPage
     public MapPage()
     {
         InitializeComponent();
-        GetDeleverys();
+        GetDeliveryStateByIdAsync(4);
     }
 
-    private async Task GetDeleverys()
+    private async Task<DeliveryState> GetDeliveryStateByIdAsync(int Id)
     {
-        CompleteAllOldOrdersAsync();
         var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("ApiKey", bezorgappApiKey);
+        httpClient.DefaultRequestHeaders.Add("apiKey", bezorgappApiKey);
+        DeliveryState OrderDeliveryState;
+
         try
         {
-            var response = await httpClient.GetAsync("http://51.137.100.120:5000/api/Order");
-            if (response.IsSuccessStatusCode)
+            var response = await httpClient.GetAsync($"{bezorgappApiURL}DeliveryStates/GetAllDeliveryStates");
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
             {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
+                PropertyNameCaseInsensitive = true
+            });
 
-                await DisplayAlert("Antwoord", jsonResponse, "W");
-            }
-            else
+            var statesForOrder = deliveryStates
+                .Where(ds => ds.OrderId == Id)
+                .ToList();
+
+            if (statesForOrder.Count == 0)
             {
-                await DisplayAlert("Fout", "Kon de leveringen niet ophalen.", "OK");
+                await DisplayAlert("Info", $"No delivery states found for OrderId {Id}", "OK");
+                return statesForOrder.FirstOrDefault();
             }
+
+            string serialized = JsonSerializer.Serialize(statesForOrder, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            await DisplayAlert("Delivery States", serialized, "OK");
         }
         catch (Exception ex)
         {
             await DisplayAlert("Fout", $"Er ging iets mis: {ex.Message}", "OK");
         }
+        return new DeliveryState();
     }
 
     private async Task CompleteAllOldOrdersAsync()
     {
         var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("ApiKey", bezorgappApiKey);
+        httpClient.DefaultRequestHeaders.Add("apiKey", bezorgappApiKey);
 
         try
         {
