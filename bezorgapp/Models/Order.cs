@@ -12,10 +12,10 @@ public class Order
 
     [JsonPropertyName("customerId")]
     public int CustomerId { get; set; }
-    
+
     [JsonPropertyName("customer")]
     public Customer Customer { get; set; }
-    
+
     [JsonPropertyName("products")]
     public List<object> Products { get; set; }
 
@@ -23,4 +23,6 @@ public class Order
     public List<object> DeliveryStates { get; set; }
 
     public int DeliveryStateState { get; set; } // 0 = In afwachting, 1 = Onderweg, 2 = Afgeleverd
+
+    public string DeliveryState { get; set; }
 }
