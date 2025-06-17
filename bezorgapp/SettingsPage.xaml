@@ -1,0 +1,35 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="bezorgapp.SettingsPage"
+             Title="                   Settings">
+
+    <VerticalStackLayout
+            Spacing="0">
+        
+            <BoxView 
+                HeightRequest="1"
+                BackgroundColor="Gray"
+                HorizontalOptions="Fill" />
+        
+            <VerticalStackLayout
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                Spacing="25"
+                Margin="0,20,0,0">
+            
+                <HorizontalStackLayout 
+                    Spacing="10"
+                    HorizontalOptions="Center">
+                    <Label 
+                        Text="Dark Mode"
+                        VerticalOptions="Center" />
+                    <Switch 
+                        x:Name="ThemeSwitch"
+                        Toggled="OnThemeToggled"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+</ContentPage>
