@@ -10,7 +10,7 @@ namespace bezorgapp.Services;
 public class ApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey = "Enter API KEY";
+    private readonly string _apiKey = "7a38a102-e061-4679-9919-ea47586d7fa3";
     private readonly string _baseUrl = "http://51.137.100.120:5000";
 
     public ApiService()
