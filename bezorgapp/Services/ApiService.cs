@@ -10,7 +10,7 @@ namespace bezorgapp.Services;
 public class ApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey = "ENTERAPIKEY";
+    private readonly string _apiKey = "7a38a102-e061-4679-9919-ea47586d7fa3";
     private readonly string _baseUrl = "http://51.137.100.120:5000";
 
     public ApiService()
@@ -59,20 +59,20 @@ public class ApiService
         return 0;
     }
 
-    public async Task<List<Order>> GetOrdersAsync()
+    public async Task<List<Models.Order>> GetOrdersAsync()
     {
         try
         {
             var response = await _httpClient.GetAsync("/api/Order");
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<List<Order>>();
+                return await response.Content.ReadFromJsonAsync<List<Models.Order>>();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching orders: {ex.Message}");
         }
-        return new List<Order>();
+        return new List<Models.Order>();
     }
 }

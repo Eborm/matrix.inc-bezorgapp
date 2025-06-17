@@ -1,5 +1,4 @@
-using System.ComponentModel;
-using System.Diagnostics.Tracing;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -10,29 +9,33 @@ public partial class MapPage : ContentPage
 {
     private readonly string orsApiKey = "5b3ce3597851110001cf6248969d1894c7d94094bab990a29141afca";
 
-    private readonly Dictionary<string, string> deliveryLocations = new Dictionary<string, string>
+    private readonly List<(double lon, double lat)> deliveryLocations = new()
     {
-        { "warhouse","40.7518325848006, -74.00519833268147" },
-        { "123 Elm St", "40.93387193082394, -73.89109905918852" },
-        { "456 Oak St", "40.92778544896371, -73.89090211231711" },
-        { "789 Pine St", "40.66591172473292, -73.86833455372528" } 
+        (-74.00519833268147, 40.7518325848006),
+        (-73.86833455372528, 40.66591172473292),
+        (-73.89109905918852, 40.93387193082394),
+        (-73.89090211231711, 40.92778544896371),
     };
+
     public MapPage()
     {
         InitializeComponent();
-        var locations = new List<(double lon, double lat)>
-        {
-            (40.7518325848006, -74.00519833268147),
-            (40.93387193082394, -73.89109905918852), 
-            (40.92778544896371, -73.89090211231711), 
-            (40.66591172473292, -73.86833455372528), 
-        };
-        OptimizeRouteAsync(locations);
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
 
-
-
+        try
+        {
+            await OptimizeRouteAsync(deliveryLocations);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Exception in OptimizeRouteAsync: {ex.Message}");
+            await DisplayAlert("Error", $"Unexpected error: {ex.Message}", "OK");
+        }
+    }
 
     private async Task OptimizeRouteAsync(List<(double lon, double lat)> locations)
     {
@@ -45,6 +48,7 @@ public partial class MapPage : ContentPage
         var vehicle = new
         {
             id = 1,
+            profile = "driving-car",
             start = new[] { locations[0].lon, locations[0].lat },
             end = new[] { locations[0].lon, locations[0].lat }
         };
@@ -68,26 +72,57 @@ public partial class MapPage : ContentPage
         if (response.IsSuccessStatusCode)
         {
             var resultJson = await response.Content.ReadAsStringAsync();
-            var doc = JsonDocument.Parse(resultJson);
+            Debug.WriteLine("ORS API Response:\n" + resultJson);
 
-            var steps = doc.RootElement
-                .GetProperty("routes")[0]
-                .GetProperty("steps");
+            using var doc = JsonDocument.Parse(resultJson);
+            var root = doc.RootElement;
 
-            StringBuilder route = new();
-            route.AppendLine("Optimal Stop Order:");
-
-            foreach (var step in steps.EnumerateArray())
+            if (root.TryGetProperty("routes", out var routesElement) && routesElement.ValueKind == JsonValueKind.Array)
             {
-                int id = step.GetProperty("id").GetInt32();
-                route.AppendLine($"Stop #{id}");
+                StringBuilder routeSummary = new();
+                routeSummary.AppendLine("Optimal Stop Orders:");
+
+                foreach (var route in routesElement.EnumerateArray())
+                {
+                    if (route.TryGetProperty("vehicle", out var vehicleElement))
+                    {
+                        int vehicleId = vehicleElement.GetInt32();
+                        routeSummary.AppendLine($"Vehicle #{vehicleId}:");
+                    }
+                    else
+                    {
+                        routeSummary.AppendLine("Vehicle: Unknown");
+                    }
+
+                    if (route.TryGetProperty("steps", out var stepsElement) && stepsElement.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var step in stepsElement.EnumerateArray())
+                        {
+                            if (step.TryGetProperty("job", out var jobElement))
+                            {
+                                int jobId = jobElement.GetInt32();
+                                routeSummary.AppendLine($"  Stop #{jobId}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        routeSummary.AppendLine("  No steps found.");
+                    }
+                }
+
+                await DisplayAlert("Optimized Route", routeSummary.ToString(), "OK");
+            }
+            else
+            {
+                await DisplayAlert("Error", "Response JSON has no 'routes' property.", "OK");
             }
 
-            await DisplayAlert("Optimized Route", route.ToString(), "OK");
         }
         else
         {
             var error = await response.Content.ReadAsStringAsync();
+            Debug.WriteLine($"ORS error response: {error}");
             await DisplayAlert("Error", $"ORS failed: {response.StatusCode}\n{error}", "OK");
         }
     }

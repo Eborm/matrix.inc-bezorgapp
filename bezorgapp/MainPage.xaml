@@ -22,6 +22,12 @@
                 Clicked="OnBekijkOrdersClicked"
                 HorizontalOptions="Center" />
 
+            <Button 
+                Text="Bekijk Map"
+                Clicked="OnShowMapClicked"
+                HorizontalOptions="Center" />
+
+
         </VerticalStackLayout>
 
     </VerticalStackLayout>
