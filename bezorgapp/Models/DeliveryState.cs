@@ -10,11 +10,11 @@ namespace bezorgapp.Models
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
-        public int State { get; set; } // Bijvoorbeeld: 1 = In afwachting, 2 = Onderweg, 3 = Afgeleverd
+        public int State { get; set; } // 1 = In afwachting, 2 = Onderweg, 3 = Afgeleverd
         public DateTime DateTime { get; set; }
-
+        
+        public int DeliveryServiceId { get; set; }
         public DeliveryService? DeliveryService { get; set; }
         public Order? Order { get; set; }
     }
-
 }

@@ -4,28 +4,44 @@
              x:Class="bezorgapp.OrdersPage"
              xmlns:models="clr-namespace:bezorgapp.Models"
              Title="Orders">
+    
     <Grid RowDefinitions="Auto, *">
-        <Label Text="Alle Orders" FontSize="Large" FontAttributes="Bold" Margin="10"/>
+        <Label Grid.Row="0" Text="Alle Orders" FontSize="Large" FontAttributes="Bold" Margin="10"/>
 
-        <CollectionView Grid.Row="1" x:Name="OrdersCollectionView">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Order">
-                    <Frame Margin="10" Padding="10" BorderColor="LightGray" CornerRadius="5">
-                        <VerticalStackLayout Spacing="8">
-                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
-                                <Label Grid.Column="0" Text="{Binding Id, StringFormat='Order ID: {0}'}" FontAttributes="Bold" FontSize="16"/>
-                                <Label Grid.Column="1" Text="{Binding OrderDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Gray" HorizontalOptions="End"/>
-                                <Label Text="{Binding DeliveryState, StringFormat='{OrderState: y}'}" TextColor="Gray" HorizontalOptions="End"/>
-                            </Grid>
+        <Grid Grid.Row="1">
+            
+            <CollectionView x:Name="OrdersCollectionView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Order">
+                        <Frame Margin="10" Padding="10" BorderColor="LightGray" CornerRadius="5">
+                            
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer 
+                                    Tapped="OnOrderTapped" 
+                                    CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                            
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                                    <Label Grid.Column="0" Text="{Binding Id, StringFormat='Order ID: {0}'}" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Grid.Column="1" Text="{Binding OrderDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Gray" HorizontalOptions="End"/>
+                                    <Label Grid.Column="1" Grid.Row="0" Text="{Binding DeliveryState}" TextColor="DarkSlateGray" HorizontalOptions="End" VerticalOptions="End"/>
+                                </Grid>
+                                <BoxView HeightRequest="1" Color="LightGray"/>
+                                <Label Text="{Binding Customer.Name}" FontAttributes="Bold" FontSize="14"/>
+                                <Label Text="{Binding Customer.Address}"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                            <BoxView HeightRequest="1" Color="LightGray"/>
-
-                            <Label Text="{Binding Customer.Name}" FontAttributes="Bold" FontSize="14"/>
-                            <Label Text="{Binding Customer.Address}"/>
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <ActivityIndicator x:Name="loadingIndicator"
+                               IsRunning="True"
+                               IsVisible="False"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" 
+                               Color="{StaticResource Primary}"/>
+        </Grid>
     </Grid>
 </ContentPage>

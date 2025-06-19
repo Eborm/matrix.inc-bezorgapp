@@ -27,4 +27,6 @@ public class Order
     public string DeliveryState { get; set; }
     
     public string DeliveryServiceName { get; set; }
+    
+    public int DeliveryServiceId { get; set; }
 }
