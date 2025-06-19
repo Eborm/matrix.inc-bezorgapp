@@ -1,4 +1,5 @@
 using bezorgapp.Services;
+using System.Linq;
 
 namespace bezorgapp
 {
@@ -9,14 +10,17 @@ namespace bezorgapp
         public OrdersPage()
         {
             InitializeComponent();
-            _apiService = new ApiService(); 
+            _apiService = new ApiService();
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             var orders = await _apiService.GetOrdersAsync();
-            foreach (var order in orders)
+            
+            var filteredOrders = orders.Where(o => o.DeliveryServiceName == "Tempnaam").ToList();
+
+            foreach (var order in filteredOrders)
             {
                 order.DeliveryStateState = await _apiService.GetDeliveryStateByIdAsync(order.Id);
 
@@ -37,7 +41,7 @@ namespace bezorgapp
                     order.DeliveryState = "Onbekend";
                 }
             }
-            OrdersCollectionView.ItemsSource = orders;
+            OrdersCollectionView.ItemsSource = filteredOrders;
         }
     }
 }

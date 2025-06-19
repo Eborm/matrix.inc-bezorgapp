@@ -25,4 +25,6 @@ public class Order
     public int DeliveryStateState { get; set; } // 0 = In afwachting, 1 = Onderweg, 2 = Afgeleverd
 
     public string DeliveryState { get; set; }
+    
+    public string DeliveryServiceName { get; set; }
 }

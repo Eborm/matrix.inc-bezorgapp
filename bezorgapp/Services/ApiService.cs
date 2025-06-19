@@ -22,8 +22,6 @@ public class ApiService
 
     public async Task<int> GetDeliveryStateByIdAsync(int Id)
     {
-        DeliveryState OrderDeliveryState;
-
         try
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
@@ -37,10 +35,6 @@ public class ApiService
                 .Where(ds => ds.OrderId == Id)
                 .ToList();
 
-            string serialized = JsonSerializer.Serialize(statesForOrder, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
             if (statesForOrder.Count == 2)
             {
                 return 1;
@@ -49,14 +43,39 @@ public class ApiService
             {
                 return 2;
             }
-
-
         }
         catch (Exception ex)
         {
-            return 0;   
+            Console.WriteLine($"Error fetching delivery state: {ex.Message}");
         }
         return 0;
+    }
+
+    public async Task<string> GetDeliveryServiceNameById(int Id)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            var lastStateForOrder = deliveryStates
+                .Where(ds => ds.OrderId == Id && ds.DeliveryService != null)
+                .LastOrDefault();
+
+            if (lastStateForOrder != null)
+            {
+                return lastStateForOrder.DeliveryService.Name;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching delivery service name: {ex.Message}");
+        }
+        return "Onbekend";
     }
 
     public async Task<List<Order>> GetOrdersAsync()
@@ -66,7 +85,12 @@ public class ApiService
             var response = await _httpClient.GetAsync("/api/Order");
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<List<Order>>();
+                var orders = await response.Content.ReadFromJsonAsync<List<Order>>();
+                foreach (var order in orders)
+                {
+                    order.DeliveryServiceName = await GetDeliveryServiceNameById(order.Id);
+                }
+                return orders;
             }
         }
         catch (Exception ex)
