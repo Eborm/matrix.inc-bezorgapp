@@ -1,4 +1,5 @@
 using bezorgapp.Services;
+using bezorgapp.Models;
 using System.Linq;
 
 namespace bezorgapp
@@ -29,6 +30,8 @@ namespace bezorgapp
                 var filteredOrders = await _apiService.GetOrdersAsync();
                 foreach (var order in filteredOrders)
                 {
+                    order.DeliveryStateState = await _apiService.GetDeliveryStateByIdAsync(order.Id);
+                    
                     switch (order.DeliveryStateState)
                     {
                         case 0:
