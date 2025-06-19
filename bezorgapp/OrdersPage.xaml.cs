@@ -19,6 +19,8 @@ namespace bezorgapp
             foreach (var order in orders)
             {
                 order.DeliveryStateState = await _apiService.GetDeliveryStateByIdAsync(order.Id);
+                order.deliverer = await _apiService.GetDeliveryServiceNameById(order.Id);
+
 
                 if (order.DeliveryStateState == 0)
                 {

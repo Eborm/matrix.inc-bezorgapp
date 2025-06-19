@@ -16,6 +16,7 @@
                                 <Label Grid.Column="0" Text="{Binding Id, StringFormat='Order ID: {0}'}" FontAttributes="Bold" FontSize="16"/>
                                 <Label Grid.Column="1" Text="{Binding OrderDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Gray" HorizontalOptions="End"/>
                                 <Label Text="{Binding DeliveryState, StringFormat='{OrderState: y}'}" TextColor="Gray" HorizontalOptions="End"/>
+                                <Label Text="{Binding deliverer, StringFormat='{Deliverer: y}'}" TextColor="Gray" HorizontalOptions="End" TranslationX="100"/>
                             </Grid>
 
                             <BoxView HeightRequest="1" Color="LightGray"/>

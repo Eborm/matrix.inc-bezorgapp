@@ -10,6 +10,10 @@ public class DeliveryState
     public int State { get; set; }
     public DateTime DateTime { get; set; }
     public int OrderId { get; set; }
+
+    public DeliveryService? DeliveryService { get; set; }
+
+    public Order? Order { get; set; }
 }
 
 public class Order

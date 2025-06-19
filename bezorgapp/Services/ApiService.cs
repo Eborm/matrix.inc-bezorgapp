@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -22,8 +23,6 @@ public class ApiService
 
     public async Task<int> GetDeliveryStateByIdAsync(int Id)
     {
-        DeliveryState OrderDeliveryState;
-
         try
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
@@ -52,7 +51,7 @@ public class ApiService
 
 
         }
-        catch (Exception ex)
+        catch
         {
             return 0;   
         }
@@ -74,5 +73,31 @@ public class ApiService
             Console.WriteLine($"Error fetching orders: {ex.Message}");
         }
         return new List<Models.Order>();
+    }
+
+    public async Task<string> GetDeliveryServiceNameById(int Id)
+    {
+        try
+        { 
+            var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            DeliveryState? statesForOrder = deliveryStates
+                .Where(ds => ds.OrderId == Id)
+                .Last();
+
+            string deliveryservice = statesForOrder.DeliveryService.Name;
+            return deliveryservice;
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching delivery service: {ex.Message}");
+        }
+        return "Onbekend";
     }
 }
