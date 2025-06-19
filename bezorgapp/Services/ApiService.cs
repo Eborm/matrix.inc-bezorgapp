@@ -10,7 +10,7 @@ namespace bezorgapp.Services;
 public class ApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey = "ENTERAPIKEY";
+    private readonly string _apiKey = "7a38a102-e061-4679-9919-ea47586d7fa3";
     private readonly string _baseUrl = "http://51.137.100.120:5000";
 
     public ApiService()
@@ -90,7 +90,14 @@ public class ApiService
                 {
                     order.DeliveryServiceName = await GetDeliveryServiceNameById(order.Id);
                 }
-                return orders;
+                var filteredOrders = orders.Where(o => o.DeliveryServiceName == "Tempnaam").ToList();
+                var extraorders = orders.Where(o => o.DeliveryServiceName == "Onbekend").ToList();
+                foreach (var extraorder in extraorders)
+                {
+                    filteredOrders.Add(extraorder);
+                    Console.WriteLine($"Added extra order {extraorder.Id}");
+                }
+                return filteredOrders;
             }
         }
         catch (Exception ex)

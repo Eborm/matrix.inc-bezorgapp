@@ -17,10 +17,7 @@ namespace bezorgapp
         {
             base.OnAppearing();
             var orders = await _apiService.GetOrdersAsync();
-            
-            var filteredOrders = orders.Where(o => o.DeliveryServiceName == "Tempnaam").ToList();
-
-            foreach (var order in filteredOrders)
+            foreach (var order in orders)
             {
                 order.DeliveryStateState = await _apiService.GetDeliveryStateByIdAsync(order.Id);
 
@@ -41,7 +38,7 @@ namespace bezorgapp
                     order.DeliveryState = "Onbekend";
                 }
             }
-            OrdersCollectionView.ItemsSource = filteredOrders;
+            OrdersCollectionView.ItemsSource = orders;
         }
     }
 }
