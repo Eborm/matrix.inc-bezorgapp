@@ -1,4 +1,3 @@
-using bezorgapp.Models;
 using bezorgapp.Services;
 using System.Linq;
 
@@ -27,9 +26,7 @@ namespace bezorgapp
 
             try
             {
-                var allOrders = await _apiService.GetOrdersAsync();
-                var filteredOrders = allOrders.Where(o => o.DeliveryServiceName == "Tempnaam").ToList();
-
+                var filteredOrders = await _apiService.GetOrdersAsync();
                 foreach (var order in filteredOrders)
                 {
                     switch (order.DeliveryStateState)

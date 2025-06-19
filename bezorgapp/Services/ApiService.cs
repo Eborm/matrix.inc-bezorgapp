@@ -20,65 +20,91 @@ public class ApiService
         _httpClient.BaseAddress = new Uri(_baseUrl);
         _httpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
     }
-    
+
+    public async Task<int> GetDeliveryStateByIdAsync(int Id)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            var statesForOrder = deliveryStates
+                .Where(ds => ds.OrderId == Id)
+                .ToList();
+
+            if (statesForOrder.Count == 2)
+            {
+                return 1;
+            }
+            else if (statesForOrder.Count == 3)
+            {
+                return 2;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching delivery state: {ex.Message}");
+        }
+        return 0;
+    }
+
+    public async Task<string> GetDeliveryServiceNameById(int Id)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            var lastStateForOrder = deliveryStates
+                .Where(ds => ds.OrderId == Id && ds.DeliveryService != null)
+                .LastOrDefault();
+
+            if (lastStateForOrder != null)
+            {
+                return lastStateForOrder.DeliveryService.Name;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching delivery service name: {ex.Message}");
+        }
+        return "Onbekend";
+    }
+
     public async Task<List<Order>> GetOrdersAsync()
     {
         try
         {
-            var ordersResponse = await _httpClient.GetAsync("/api/Order");
-            if (!ordersResponse.IsSuccessStatusCode) return new List<Order>();
-            var orders = await ordersResponse.Content.ReadFromJsonAsync<List<Order>>();
-
-            var deliveryStatesResponse =
-                await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
-            if (!deliveryStatesResponse.IsSuccessStatusCode) return orders;
-            var allDeliveryStates = await deliveryStatesResponse.Content.ReadFromJsonAsync<List<DeliveryState>>(
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-            var statesByOrderId = allDeliveryStates.GroupBy(ds => ds.OrderId).ToDictionary(g => g.Key, g => g.ToList());
-
-            foreach (var order in orders)
+            var response = await _httpClient.GetAsync("/api/Order");
+            if (response.IsSuccessStatusCode)
             {
-                if (statesByOrderId.TryGetValue(order.Id, out var orderStates))
+                var orders = await response.Content.ReadFromJsonAsync<List<Order>>();
+                foreach (var order in orders)
                 {
-                    var lastStateWithService = orderStates.LastOrDefault(s => s.DeliveryService != null);
-                    order.DeliveryServiceName = lastStateWithService?.DeliveryService?.Name ?? "Onbekend";
-
-                    if (lastStateWithService != null)
-                    {
-                        order.DeliveryServiceId = lastStateWithService.DeliveryServiceId;
-                    }
-
-                    switch (orderStates.Count)
-                    {
-                        case 3:
-                            order.DeliveryStateState = 2; // Afgeleverd
-                            break;
-                        case 2:
-                            order.DeliveryStateState = 1; // Onderweg
-                            break;
-                        default:
-                            order.DeliveryStateState = 0; // In afwachting
-                            break;
-                    }
+                    order.DeliveryServiceName = await GetDeliveryServiceNameById(order.Id);
                 }
-                else
+                var filteredOrders = orders.Where(o => o.DeliveryServiceName == "Tempnaam").ToList();
+                var extraorders = orders.Where(o => o.DeliveryServiceName == "Onbekend").ToList();
+                foreach (var extraorder in extraorders)
                 {
-                    order.DeliveryServiceName = "Onbekend";
-                    order.DeliveryStateState = 0;
+                    filteredOrders.Add(extraorder);
+                    Console.WriteLine($"Added extra order {extraorder.Id}");
                 }
+                return filteredOrders;
             }
-
-            return orders;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching orders with details: {ex.Message}");
         }
-
         return new List<Order>();
     }
 
