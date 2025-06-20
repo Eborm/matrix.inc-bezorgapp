@@ -19,7 +19,7 @@ namespace bezorgapp
             base.OnAppearing();
             await LoadOrdersAsync();
         }
-        
+
         private async Task LoadOrdersAsync()
         {
             loadingIndicator.IsVisible = true;
@@ -28,27 +28,6 @@ namespace bezorgapp
             try
             {
                 var filteredOrders = await _apiService.GetOrdersAsync();
-                foreach (var order in filteredOrders)
-                {
-                    order.DeliveryStateState = await _apiService.GetDeliveryStateByIdAsync(order.Id);
-                    
-                    switch (order.DeliveryStateState)
-                    {
-                        case 0:
-                            order.DeliveryState = "In afwachting";
-                            break;
-                        case 1:
-                            order.DeliveryState = "Onderweg";
-                            break;
-                        case 2:
-                            order.DeliveryState = "Afgeleverd";
-                            break;
-                        default:
-                            order.DeliveryState = "Onbekend";
-                            break;
-                    }
-                }
-                
                 OrdersCollectionView.ItemsSource = filteredOrders;
             }
             finally
@@ -57,63 +36,72 @@ namespace bezorgapp
                 OrdersCollectionView.IsVisible = true;
             }
         }
-        
+
         private async void OnOrderTapped(object sender, TappedEventArgs e)
-        {
-            if (e.Parameter is not Order selectedOrder)
-                return;
-            
-            string action = await DisplayActionSheet(
-                $"Opties voor Order {selectedOrder.Id}",
-                "Annuleren",
-                null,
-                "Markeer als Onderweg", 
-                "Markeer als Afgeleverd",
-                "Foto toevoegen",
-                "Bekijk foto's");
+{
+    if (e.Parameter is not Order selectedOrder)
+        return;
 
-            (bool success, string errorMessage) result = (false, "Geen actie gekozen.");
-            bool actionChosen = false;
+    string action = await DisplayActionSheet(
+        $"Opties voor Order {selectedOrder.Id}",
+        "Annuleren",
+        null,
+        "Markeer als Onderweg", 
+        "Markeer als Afgeleverd",
+        "Bekijk foto's");
 
-            loadingIndicator.IsVisible = true;
+    (bool success, string errorMessage) result = (false, "Geen actie gekozen.");
+    bool actionChosen = false;
 
-            switch (action)
+    loadingIndicator.IsVisible = true;
+
+    switch (action)
+    {
+        case "Markeer als Onderweg":
+            result = await _apiService.MarkAsInProgressAsync(selectedOrder.Id);
+            actionChosen = true;
+            break;
+
+        case "Markeer als Afgeleverd":
+            if (selectedOrder.DeliveryState == "Onderweg")
             {
-                case "Markeer als Onderweg":
-                    result = await _apiService.MarkAsInProgressAsync(selectedOrder.Id);
-                    actionChosen = true;
-                    break;
-
-                case "Markeer als Afgeleverd":
-                    result = await _apiService.MarkAsCompletedAsync(selectedOrder.Id);
-                    actionChosen = true;
-                    break;
-                
-                case "Foto toevoegen":
-                    await Navigation.PushAsync(new CreatePicture(selectedOrder.Id));
-                    loadingIndicator.IsVisible = false;
-                    return;
-
-                case "Bekijk foto's":
-                    await Navigation.PushAsync(new PhotoGalleryPage(selectedOrder.Id));
-                    loadingIndicator.IsVisible = false;
-                    return;
+                await Navigation.PushAsync(new CreatePicture(selectedOrder.Id, true));
+                loadingIndicator.IsVisible = false;
+                return; 
             }
-            
-            if (actionChosen)
+            else
             {
-                if (result.success)
-                {
-                    await DisplayAlert("Succes", "De status is bijgewerkt.", "OK");
-                }
-                else
-                {
-                    await DisplayAlert("Fout", $"De status kon niet worden bijgewerkt:\n\n{result.errorMessage}", "OK");
-                }
+                await DisplayAlert("Actie niet toegestaan", "Een order kan alleen als afgeleverd worden gemarkeerd als de status 'Onderweg' is.", "OK");
+                actionChosen = false;
             }
-            
-            await LoadOrdersAsync();
+            break;
+
+        case "Bekijk foto's":
+            await Navigation.PushAsync(new PhotoGalleryPage(selectedOrder.Id));
             loadingIndicator.IsVisible = false;
+            return;
+    }
+
+    if (actionChosen)
+    {
+        if (result.success)
+        {
+            await DisplayAlert("Succes", "De status is bijgewerkt.", "OK");
         }
+        else
+        {
+            await DisplayAlert("Fout", $"De status kon niet worden bijgewerkt:\n\n{result.errorMessage}", "OK");
+        }
+    }
+    
+    if (actionChosen)
+    {
+        await LoadOrdersAsync();
+    }
+    else
+    {
+        loadingIndicator.IsVisible = false;
+    }
+}
     }
 }

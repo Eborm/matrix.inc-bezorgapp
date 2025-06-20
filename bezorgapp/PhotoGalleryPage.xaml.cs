@@ -10,7 +10,7 @@ namespace bezorgapp
     public partial class PhotoGalleryPage : ContentPage
     {
         private readonly int _orderId;
-        
+
         public PhotoGalleryPage(int orderId)
         {
             InitializeComponent();

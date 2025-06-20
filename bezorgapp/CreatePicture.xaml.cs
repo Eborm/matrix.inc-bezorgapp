@@ -2,17 +2,23 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using bezorgapp.Services;
 
 namespace bezorgapp;
 
 public partial class CreatePicture : ContentPage
 {
     private readonly int _orderId;
+    private readonly bool _markAsCompletedAfterUpload;
+    private readonly ApiService _apiService;
     
-    public CreatePicture(int orderId)
+    public CreatePicture(int orderId, bool markAsCompletedAfterUpload = false)
     {
         InitializeComponent();
         _orderId = orderId;
+        _markAsCompletedAfterUpload = markAsCompletedAfterUpload;
+        _apiService = new ApiService();
+        
         Title = $"Foto voor Order {_orderId}";
     }
 
@@ -25,7 +31,7 @@ public partial class CreatePicture : ContentPage
             {
                 var stream = await photo.OpenReadAsync();
                 CapturedImage.Source = ImageSource.FromStream(() => stream);
-                await UploadPhotoAsync(photo);
+                await UploadAndFinalizeAsync(photo);
             }
         }
         catch (Exception ex)
@@ -43,7 +49,7 @@ public partial class CreatePicture : ContentPage
             {
                 var stream = await photo.OpenReadAsync();
                 CapturedImage.Source = ImageSource.FromStream(() => stream);
-                await UploadPhotoAsync(photo);
+                await UploadAndFinalizeAsync(photo); // Aangepaste methode aanroepen
             }
         }
         catch (Exception ex)
@@ -52,13 +58,13 @@ public partial class CreatePicture : ContentPage
         }
     }
     
-    private async Task UploadPhotoAsync(FileResult photo)
+    private async Task UploadAndFinalizeAsync(FileResult photo)
     {
+        if (photo == null) return;
+
         try
         {
-            if (photo == null) return;
-            
-            var uploadUrl = $"https://bezorgapp-api-1234.azurewebsites.net/api/upload/order/{_orderId}";
+            var uploadUrl = $"{_apiService.BaseUrl}/api/upload/order/{_orderId}";
 
             using var stream = await photo.OpenReadAsync();
             using var content = new MultipartFormDataContent();
@@ -67,25 +73,34 @@ public partial class CreatePicture : ContentPage
             content.Add(fileContent, "file", photo.FileName);
 
             using var httpClient = new HttpClient();
-            var response = await httpClient.PostAsync(uploadUrl, content);
+            var uploadResponse = await httpClient.PostAsync(uploadUrl, content);
 
-            if (response.IsSuccessStatusCode)
+            if (!uploadResponse.IsSuccessStatusCode)
             {
-                await DisplayAlert("Succes", "Foto geüpload!", "OK");
-                await Navigation.PopAsync();
+                string error = await uploadResponse.Content.ReadAsStringAsync();
+                await DisplayAlert("Fout bij upload", $"Upload mislukt: {uploadResponse.StatusCode}\n{error}", "OK");
+                return;
             }
-            else
+            
+            if (_markAsCompletedAfterUpload)
             {
-                string error = await response.Content.ReadAsStringAsync();
-                await DisplayAlert("Fout", $"Upload mislukt: {response.StatusCode}\n{error}", "OK");
+                var (success, errorMessage) = await _apiService.MarkAsCompletedAsync(_orderId);
+                if (!success)
+                {
+                    await DisplayAlert("Fout bij statusupdate", $"Foto is geüpload, maar de status kon niet worden bijgewerkt:\n\n{errorMessage}", "OK");
+                    return;
+                }
             }
+            
+            await DisplayAlert("Succes", "Order succesvol afgeleverd en foto opgeslagen.", "OK");
+            await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Fout", $"Er ging iets mis: {ex.Message}", "OK");
+            await DisplayAlert("Fout", $"Er ging een onverwachte fout op: {ex.Message}", "OK");
         }
     }
-
+    
     private async void OnShowGalleryClicked(object sender, EventArgs e)
     {
         await Navigation.PushAsync(new PhotoGalleryPage(_orderId));

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading.Tasks;
 using bezorgapp.Models;
 using System;
@@ -11,99 +10,30 @@ namespace bezorgapp.Services;
 public class ApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey = "API_KEY";
-    private readonly string _baseUrl = "http://51.137.100.120:5000";
+    private readonly string _apiKey = "APIKEY_BEZORGAPP";
+    public string BaseUrl { get; } = "https://bezorgapp-api-1234.azurewebsites.net";
 
     public ApiService()
     {
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(_baseUrl);
+        _httpClient.BaseAddress = new Uri(BaseUrl);
         _httpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
-    }
-
-    public async Task<int> GetDeliveryStateByIdAsync(int Id)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            var statesForOrder = deliveryStates
-                .Where(ds => ds.OrderId == Id)
-                .ToList();
-
-            if (statesForOrder.Count == 2)
-            {
-                return 1;
-            }
-            else if (statesForOrder.Count == 3)
-            {
-                return 2;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching delivery state: {ex.Message}");
-        }
-        return 0;
-    }
-
-    public async Task<string> GetDeliveryServiceNameById(int Id)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync($"{_baseUrl}/Api/DeliveryStates/GetAllDeliveryStates");
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var deliveryStates = JsonSerializer.Deserialize<List<DeliveryState>>(jsonResponse, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            var lastStateForOrder = deliveryStates
-                .Where(ds => ds.OrderId == Id && ds.DeliveryService != null)
-                .LastOrDefault();
-
-            if (lastStateForOrder != null)
-            {
-                return lastStateForOrder.DeliveryService.Name;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching delivery service name: {ex.Message}");
-        }
-        return "Onbekend";
     }
 
     public async Task<List<Order>> GetOrdersAsync()
     {
         try
         {
-            var response = await _httpClient.GetAsync("/api/Order");
+            var response = await _httpClient.GetAsync("/api/Order/GetMyDeliveries");
             if (response.IsSuccessStatusCode)
             {
                 var orders = await response.Content.ReadFromJsonAsync<List<Order>>();
-                foreach (var order in orders)
-                {
-                    order.DeliveryServiceName = await GetDeliveryServiceNameById(order.Id);
-                }
-                var filteredOrders = orders.Where(o => o.DeliveryServiceName == "Tempnaam").ToList();
-                var extraorders = orders.Where(o => o.DeliveryServiceName == "Onbekend").ToList();
-                foreach (var extraorder in extraorders)
-                {
-                    filteredOrders.Add(extraorder);
-                    Console.WriteLine($"Added extra order {extraorder.Id}");
-                }
-                return filteredOrders;
+                return orders ?? new List<Order>();
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching orders with details: {ex.Message}");
+            Console.WriteLine($"Error fetching filtered orders: {ex.Message}");
         }
         return new List<Order>();
     }
@@ -114,17 +44,10 @@ public class ApiService
         try
         {
             var response = await _httpClient.PostAsync(url, null);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return (true, null);
-            }
-            else
-            {
-                string errorContent = await response.Content.ReadAsStringAsync();
-                string errorMessage = $"Statuscode: {response.StatusCode}\nServer-respons: {errorContent}";
-                return (false, errorMessage);
-            }
+            if (response.IsSuccessStatusCode) return (true, null);
+            
+            string errorContent = await response.Content.ReadAsStringAsync();
+            return (false, $"Statuscode: {response.StatusCode}\nServer-respons: {errorContent}");
         }
         catch (Exception ex)
         {
@@ -138,17 +61,10 @@ public class ApiService
         try
         {
             var response = await _httpClient.PostAsync(url, null);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return (true, null);
-            }
-            else
-            {
-                string errorContent = await response.Content.ReadAsStringAsync();
-                string errorMessage = $"Statuscode: {response.StatusCode}\nServer-respons: {errorContent}";
-                return (false, errorMessage);
-            }
+            if (response.IsSuccessStatusCode) return (true, null);
+            
+            string errorContent = await response.Content.ReadAsStringAsync();
+            return (false, $"Statuscode: {response.StatusCode}\nServer-respons: {errorContent}");
         }
         catch (Exception ex)
         {
