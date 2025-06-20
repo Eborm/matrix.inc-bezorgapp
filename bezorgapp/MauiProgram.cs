@@ -1,6 +1,5 @@
-﻿using bezorgapp.Services;
-using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting;
+﻿using Microsoft.Extensions.Logging;
+using bezorgapp.Services;
 
 namespace bezorgapp
 {
@@ -11,7 +10,6 @@ namespace bezorgapp
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .UseMauiMaps()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -19,8 +17,9 @@ namespace bezorgapp
                 });
             
             builder.Services.AddSingleton<ApiService>();
+
 #if DEBUG
-            builder.Logging.AddDebug();
+    		builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

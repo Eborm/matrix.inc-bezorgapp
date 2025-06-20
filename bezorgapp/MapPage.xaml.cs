@@ -1,15 +1,11 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
-
+using System.Globalization;
 
 namespace bezorgapp;
 
@@ -193,7 +189,7 @@ public partial class MapPage : ContentPage
 
         var payload = new
         {
-            coordinates = fullroute.Select(loc => new[] { loc.lon, loc.lat }).ToArray(),
+            coordinates = fullRoute.Select(loc => new[] { loc.lon, loc.lat }).ToArray(),
         };
         var json = JsonSerializer.Serialize(payload);
 
@@ -210,53 +206,8 @@ public partial class MapPage : ContentPage
         {
             var resultJson = await response.Content.ReadAsStringAsync();
 
-            var geoJsonDoc = JsonDocument.Parse(resultJson);
-
-            // Extract coordinates
-            var coordinates = geoJsonDoc.RootElement
-                .GetProperty("features")[0]
-                .GetProperty("geometry")
-                .GetProperty("coordinates")
-                .EnumerateArray()
-                .Select(coord =>
-                {
-                    double lon = coord[0].GetDouble();
-                    double lat = coord[1].GetDouble();
-                    return new Location(lat, lon); // MAUI Maps expects (lat, lon)
-                }).ToList();
-
-            // Draw polyline
-            var polyline = new Polyline
-            {
-                StrokeColor = Colors.Blue,
-                StrokeWidth = 5
-            };
-
-            foreach (var location in coordinates)
-            {
-                polyline.Geopath.Add(location);
-            }
-            foreach (var loc in fullroute)
-            {
-                var pin = new Pin
-                {
-                    Location = new Location(loc.lat, loc.lon),
-                    Label = "Stop"
-                };
-                DeliveryMap.Pins.Add(pin);
-            }
-
-
-            DeliveryMap.MapElements.Clear();
-            DeliveryMap.MapElements.Add(polyline);
-
-            // Optionally move map center
-            if (coordinates.Count > 0)
-            {
-                DeliveryMap.MoveToRegion(MapSpan.FromCenterAndRadius(coordinates[0], Distance.FromKilometers(2)));
-            }
-
-            await DisplayAlert("Route Calculated", "Successfully fetched and displayed route!", "OK");
+            await DisplayAlert("Route Calculated", "Successfully fetched route!", "OK");
+            // TODO: Draw route on map, if you're using e.g. Mapsui or Xamarin.Forms.Maps
         }
         else
         {
