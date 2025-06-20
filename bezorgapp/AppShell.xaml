@@ -9,10 +9,6 @@
     <FlyoutItem Title="Home" Icon="home.png">
         <ShellContent Title="                    Home" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
-
-    <FlyoutItem Title="Create Photo">
-        <ShellContent Title="Photos" ContentTemplate="{DataTemplate local:CreatePicture}" />
-    </FlyoutItem>
     
     <FlyoutItem Title="Settings">
         <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" />

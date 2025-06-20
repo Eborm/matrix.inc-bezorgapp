@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using Microsoft.Maui.Controls;
@@ -8,22 +9,28 @@ namespace bezorgapp
 {
     public partial class PhotoGalleryPage : ContentPage
     {
-        private const string ListEndpoint = "https://bezorgapp-api-1234.azurewebsites.net/api/upload/list";
-
-        public PhotoGalleryPage()
+        private readonly int _orderId;
+        
+        public PhotoGalleryPage(int orderId)
         {
             InitializeComponent();
+            _orderId = orderId;
+            Title = $"Foto's voor Order {orderId}";
             LoadImages();
         }
 
         private async void LoadImages()
         {
+            var requestUrl = $"https://bezorgapp-api-1234.azurewebsites.net/api/upload/order/{_orderId}";
+
             try
             {
                 using var httpClient = new HttpClient();
-                var imageUrls = await httpClient.GetFromJsonAsync<List<string>>(ListEndpoint);
+                var imageUrls = await httpClient.GetFromJsonAsync<List<string>>(requestUrl);
 
-                if (imageUrls != null)
+                ImagesLayout.Children.Clear();
+
+                if (imageUrls != null && imageUrls.Any())
                 {
                     foreach (var url in imageUrls)
                     {
@@ -48,7 +55,7 @@ namespace bezorgapp
                 }
                 else
                 {
-                    await DisplayAlert("Info", "Geen foto's gevonden.", "OK");
+                    ImagesLayout.Children.Add(new Label { Text = "Geen foto's gevonden voor deze order.", HorizontalOptions = LayoutOptions.Center, Margin = new Thickness(20) });
                 }
             }
             catch (Exception ex)

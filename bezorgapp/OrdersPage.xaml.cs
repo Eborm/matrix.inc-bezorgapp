@@ -62,32 +62,44 @@ namespace bezorgapp
         {
             if (e.Parameter is not Order selectedOrder)
                 return;
-
+            
             string action = await DisplayActionSheet(
-                $"Order {selectedOrder.Id} status wijzigen",
+                $"Opties voor Order {selectedOrder.Id}",
                 "Annuleren",
                 null,
-                "Markeer als Onderweg", "Markeer als Afgeleverd");
+                "Markeer als Onderweg", 
+                "Markeer als Afgeleverd",
+                "Foto toevoegen",
+                "Bekijk foto's");
 
             (bool success, string errorMessage) result = (false, "Geen actie gekozen.");
             bool actionChosen = false;
 
             loadingIndicator.IsVisible = true;
 
-            if (action == "Markeer als Onderweg")
+            switch (action)
             {
-                // Roep de (geschatte) methode voor 'Onderweg' aan
-                result = await _apiService.MarkAsInProgressAsync(selectedOrder.Id);
-                actionChosen = true;
-            }
-            else if (action == "Markeer als Afgeleverd")
-            {
-                // Roep de correcte methode voor 'Afgeleverd' aan
-                result = await _apiService.MarkAsCompletedAsync(selectedOrder.Id);
-                actionChosen = true;
-            }
+                case "Markeer als Onderweg":
+                    result = await _apiService.MarkAsInProgressAsync(selectedOrder.Id);
+                    actionChosen = true;
+                    break;
 
-            // Als er een actie is gekozen, verwerk het resultaat
+                case "Markeer als Afgeleverd":
+                    result = await _apiService.MarkAsCompletedAsync(selectedOrder.Id);
+                    actionChosen = true;
+                    break;
+                
+                case "Foto toevoegen":
+                    await Navigation.PushAsync(new CreatePicture(selectedOrder.Id));
+                    loadingIndicator.IsVisible = false;
+                    return;
+
+                case "Bekijk foto's":
+                    await Navigation.PushAsync(new PhotoGalleryPage(selectedOrder.Id));
+                    loadingIndicator.IsVisible = false;
+                    return;
+            }
+            
             if (actionChosen)
             {
                 if (result.success)
@@ -99,8 +111,7 @@ namespace bezorgapp
                     await DisplayAlert("Fout", $"De status kon niet worden bijgewerkt:\n\n{result.errorMessage}", "OK");
                 }
             }
-        
-            // Herlaad de lijst om de wijziging te zien (of als er niets is gekozen)
+            
             await LoadOrdersAsync();
             loadingIndicator.IsVisible = false;
         }

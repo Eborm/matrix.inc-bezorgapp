@@ -1,39 +1,50 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace bezorgapp;
 
 public partial class CreatePicture : ContentPage
 {
-    public CreatePicture()
+    private readonly int _orderId;
+    
+    public CreatePicture(int orderId)
     {
         InitializeComponent();
+        _orderId = orderId;
+        Title = $"Foto voor Order {_orderId}";
     }
-    
+
     private async void OnTakePhotoClicked(object sender, EventArgs e)
     {
         try
         {
             FileResult photo = await MediaPicker.CapturePhotoAsync();
-
             if (photo != null)
             {
                 var stream = await photo.OpenReadAsync();
                 CapturedImage.Source = ImageSource.FromStream(() => stream);
-                    
                 await UploadPhotoAsync(photo);
             }
         }
-        catch (FeatureNotSupportedException)
+        catch (Exception ex)
         {
-            await DisplayAlert("Fout", "Camera wordt niet ondersteund op dit apparaat.", "OK");
+            await DisplayAlert("Fout", $"Er ging iets mis: {ex.Message}", "OK");
         }
-        catch (PermissionException)
+    }
+
+    private async void OnPickPhotoClicked(object sender, EventArgs e)
+    {
+        try
         {
-            await DisplayAlert("Fout", "Geen toestemming voor camera.", "OK");
+            var photo = await MediaPicker.PickPhotoAsync();
+            if (photo != null)
+            {
+                var stream = await photo.OpenReadAsync();
+                CapturedImage.Source = ImageSource.FromStream(() => stream);
+                await UploadPhotoAsync(photo);
+            }
         }
         catch (Exception ex)
         {
@@ -45,8 +56,9 @@ public partial class CreatePicture : ContentPage
     {
         try
         {
-            if (photo == null)
-                return;
+            if (photo == null) return;
+            
+            var uploadUrl = $"https://bezorgapp-api-1234.azurewebsites.net/api/upload/order/{_orderId}";
 
             using var stream = await photo.OpenReadAsync();
             using var content = new MultipartFormDataContent();
@@ -55,15 +67,17 @@ public partial class CreatePicture : ContentPage
             content.Add(fileContent, "file", photo.FileName);
 
             using var httpClient = new HttpClient();
-            var response = await httpClient.PostAsync("https://bezorgapp-api-1234.azurewebsites.net/api/upload/upload", content);
+            var response = await httpClient.PostAsync(uploadUrl, content);
 
             if (response.IsSuccessStatusCode)
             {
                 await DisplayAlert("Succes", "Foto geüpload!", "OK");
+                await Navigation.PopAsync();
             }
             else
             {
-                await DisplayAlert("Fout", $"Upload mislukt: {response.StatusCode}", "OK");
+                string error = await response.Content.ReadAsStringAsync();
+                await DisplayAlert("Fout", $"Upload mislukt: {response.StatusCode}\n{error}", "OK");
             }
         }
         catch (Exception ex)
@@ -71,33 +85,9 @@ public partial class CreatePicture : ContentPage
             await DisplayAlert("Fout", $"Er ging iets mis: {ex.Message}", "OK");
         }
     }
-    
-    private async void OnPickPhotoClicked(object sender, EventArgs e)
-    {
-        try
-        {
-            var photo = await MediaPicker.PickPhotoAsync();
 
-            if (photo != null)
-            {
-                var stream = await photo.OpenReadAsync();
-                CapturedImage.Source = ImageSource.FromStream(() => stream);
-            
-                await UploadPhotoAsync(photo);
-            }
-        }
-        catch (PermissionException)
-        {
-            await DisplayAlert("Fout", "Geen toestemming voor toegang tot de fotogalerij.", "OK");
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Fout", $"Er ging iets mis: {ex.Message}", "OK");
-        }
-    }
-    
     private async void OnShowGalleryClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new PhotoGalleryPage());
+        await Navigation.PushAsync(new PhotoGalleryPage(_orderId));
     }
 }
