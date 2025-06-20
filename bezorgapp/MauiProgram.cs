@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using bezorgapp.Services;
+using CommunityToolkit.Maui;
 using ZXing.Net.Maui.Controls;
 
 namespace bezorgapp
@@ -11,6 +12,7 @@ namespace bezorgapp
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .UseBarcodeReader()
                 .ConfigureFonts(fonts =>
                 {
