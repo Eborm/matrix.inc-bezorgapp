@@ -8,6 +8,7 @@
             
             Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
             Routing.RegisterRoute(nameof(PhotoGalleryPage), typeof(PhotoGalleryPage));
+            Routing.RegisterRoute(nameof(MapPage), typeof(MapPage));
         }
     }
 }

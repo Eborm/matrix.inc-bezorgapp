@@ -13,7 +13,15 @@
         }
         private async void OnShowMapClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new MapPage());
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(MapPage));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Navigation error: {ex}");
+                await DisplayAlert("Navigation Error", ex.Message, "OK");
+            }
         }
     }
 }
