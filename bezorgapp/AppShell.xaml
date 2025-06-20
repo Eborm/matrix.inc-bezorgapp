@@ -10,7 +10,7 @@
         <ShellContent Title="                    Home" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
     
-    <FlyoutItem Title="Settings">
+    <FlyoutItem Title="Settings" Icon="Settings.png">
         <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" />
     </FlyoutItem>
 

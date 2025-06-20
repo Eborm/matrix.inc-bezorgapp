@@ -10,7 +10,14 @@
             BarcodesDetected="BarcodesDetected"
             HorizontalOptions="Fill" 
             VerticalOptions="Fill" />
-
+            
+        <ActivityIndicator
+            x:Name="loadingIndicator"
+            IsRunning="True"
+            IsVisible="False"
+            Color="White"
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
         <Label
             x:Name="resultLabel"
             Text="Scan een barcode..."
