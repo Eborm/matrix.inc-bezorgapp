@@ -25,7 +25,7 @@
                                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
                                     <Label Grid.Column="0" Text="{Binding Id, StringFormat='Order ID: {0}'}" FontAttributes="Bold" FontSize="16"/>
                                     <Label Grid.Column="1" Text="{Binding OrderDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Gray" HorizontalOptions="End"/>
-                                    <Label Grid.Column="1" Grid.Row="0" Text="{Binding DeliveryState}" TextColor="DarkSlateGray" HorizontalOptions="End" VerticalOptions="End"/>
+                                    <Label Grid.Column="1" Grid.Row="0" Text="{Binding DeliveryState}" TextColor="DarkSlateGray" HorizontalOptions="End" VerticalOptions="End" TranslationX="-100" TranslationY="-3"/>
                                 </Grid>
                                 <BoxView HeightRequest="1" Color="LightGray"/>
                                 <Label Text="{Binding Customer.Name}" FontAttributes="Bold" FontSize="14"/>
