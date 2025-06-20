@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// In bezorgapp/MauiProgram.cs
+
+using Microsoft.Extensions.Logging;
 using bezorgapp.Services;
+// Zorg ervoor dat deze using-statement aanwezig is
+using Microsoft.Maui.Controls.Maps;
 
 namespace bezorgapp
 {
@@ -10,6 +14,7 @@ namespace bezorgapp
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiMaps()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -19,7 +24,7 @@ namespace bezorgapp
             builder.Services.AddSingleton<ApiService>();
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

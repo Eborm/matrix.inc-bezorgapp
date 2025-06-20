@@ -1,11 +1,11 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Maui.Controls;
 using System.Globalization;
+using Microsoft.Maui.Controls.Maps;
+using Microsoft.Maui.Maps;
 
 namespace bezorgapp;
 
@@ -54,8 +54,8 @@ public partial class MapPage : ContentPage
         var jobLocationMap = new Dictionary<int, (double lon, double lat)>();
         var jobs = locations.Select((loc, index) =>
         {
-            int jobId = index + 1; // ORS job IDs are 1-based
-            jobLocationMap[jobId] = loc; // Store the original location with its ID
+            int jobId = index + 1;
+            jobLocationMap[jobId] = loc;
             return new
             {
                 id = jobId,
@@ -100,13 +100,13 @@ public partial class MapPage : ContentPage
                 {
                     if (routesElement.EnumerateArray().Any())
                     {
-                        var firstRoute = routesElement.EnumerateArray().First(); // Get the first (and usually only) route
+                        var firstRoute = routesElement.EnumerateArray().First();
                         if (firstRoute.TryGetProperty("steps", out JsonElement stepsElement) && stepsElement.ValueKind == JsonValueKind.Array)
                         {
                             foreach (var step in stepsElement.EnumerateArray())
                             {
                                 if (step.TryGetProperty("type", out JsonElement typeElement) &&
-                                    typeElement.GetString() == "job") // We only care about "job" steps for the sequence
+                                    typeElement.GetString() == "job")
                                 {
                                     if (step.TryGetProperty("id", out JsonElement idElement) &&
                                         idElement.ValueKind == JsonValueKind.Number)
@@ -125,36 +125,22 @@ public partial class MapPage : ContentPage
                             }
                         }
                     }
-                    else
-                    {
-                        Debug.WriteLine("ORS response contains 'routes' array, but it's empty.");
-                    }
                 }
-                else
+                
+                if (root.TryGetProperty("unassigned", out JsonElement unassignedElement) && unassignedElement.EnumerateArray().Any())
                 {
-                    Debug.WriteLine("ORS response does not contain a 'routes' array or it's not an array.");
+                    var unassignedJobIds = string.Join(", ", unassignedElement.EnumerateArray().Select(u => u.GetProperty("id").GetInt32()));
+                    await DisplayAlert("Optimization Warning", $"Some jobs could not be assigned: {unassignedJobIds}", "OK");
                 }
 
-                // Check for unassigned jobs (optional, but good for debugging)
-                if (root.TryGetProperty("unassigned", out JsonElement unassignedElement) && unassignedElement.ValueKind == JsonValueKind.Array)
-                {
-                    if (unassignedElement.EnumerateArray().Any())
-                    {
-                        var unassignedJobIds = string.Join(", ", unassignedElement.EnumerateArray().Select(u => u.GetProperty("id").GetInt32()));
-                        await DisplayAlert("Optimization Warning", $"Some jobs could not be assigned: {unassignedJobIds}", "OK");
-                        Debug.WriteLine($"Unassigned ORS jobs: {unassignedJobIds}");
-                    }
-                }
-
-                return OptimezedRoute; // <--- This returns the reordered list!
+                return OptimezedRoute; 
             }
         }
         else
         {
             var error = await response.Content.ReadAsStringAsync();
-            Debug.WriteLine($"ORS error response: {error}");
             await DisplayAlert("Error", $"ORS failed: {response.StatusCode}\n{error}", "OK");
-            return locations; // Return the original order if optimization fails
+            return locations;
         }
     }
 
@@ -163,7 +149,6 @@ public partial class MapPage : ContentPage
         if (AdressesToCords.TryGetValue(address, out var coords))
         {
             var parts = coords.Split(',');
-            // Use CultureInfo.InvariantCulture to correctly parse the doubles
             double lat = double.Parse(parts[0].Trim(), CultureInfo.InvariantCulture);
             double lon = double.Parse(parts[1].Trim(), CultureInfo.InvariantCulture);
 
@@ -174,26 +159,39 @@ public partial class MapPage : ContentPage
 
     private async Task<List<(double lon, double lat)>> GetLocationAsync()
     {
-        Location location = await Geolocation.Default.GetLastKnownLocationAsync();
-        return new List<(double lon, double lat)> { (location.Longitude, location.Latitude) };
+        try
+        {
+            Location location = await Geolocation.Default.GetLastKnownLocationAsync();
+            if (location != null)
+                return new List<(double lon, double lat)> { (location.Longitude, location.Latitude) };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting location: {ex.Message}");
+        }
+        return new List<(double lon, double lat)>();
     }
-
-    private async Task CalculateRoute(List<(double lon, double lat)> Locations)
+    
+    private async Task CalculateRoute(List<(double lon, double lat)> locations)
     {
         var start_end = AdressToCoordinates("warhouse");
-        var fullRoute = new List<(double lon, double lat)>(Locations);
-        var curruntlocation= await GetLocationAsync();
-        fullRoute.Insert(0, (curruntlocation[0]));
-        fullRoute.Add(start_end[0]);
-        var fullroute = await OptimizeRouteAsync(fullRoute);
+        var fullRouteUnoptimized = new List<(double lon, double lat)>(locations);
+        var currentLocation = await GetLocationAsync();
+
+        if (currentLocation.Any())
+        {
+            fullRouteUnoptimized.Insert(0, currentLocation[0]);
+        }
+        
+        fullRouteUnoptimized.Add(start_end[0]);
+        
+        var optimizedRoutePoints = await OptimizeRouteAsync(fullRouteUnoptimized);
 
         var payload = new
         {
-            coordinates = fullRoute.Select(loc => new[] { loc.lon, loc.lat }).ToArray(),
+            coordinates = optimizedRoutePoints.Select(loc => new[] { loc.lon, loc.lat }).ToArray(),
         };
         var json = JsonSerializer.Serialize(payload);
-
-
 
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Add("Authorization", orsApiKey);
@@ -202,18 +200,63 @@ public partial class MapPage : ContentPage
             "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
             new StringContent(json, Encoding.UTF8, "application/json")
         );
+
         if (response.IsSuccessStatusCode)
         {
             var resultJson = await response.Content.ReadAsStringAsync();
-
-            await DisplayAlert("Route Calculated", "Successfully fetched route!", "OK");
-            // TODO: Draw route on map, if you're using e.g. Mapsui or Xamarin.Forms.Maps
+            DrawRouteOnMap(resultJson, optimizedRoutePoints);
+            await DisplayAlert("Route Calculated", "Successfully fetched and displayed route!", "OK");
         }
         else
         {
             var error = await response.Content.ReadAsStringAsync();
             Debug.WriteLine($"ORS Directions API error: {error}");
             await DisplayAlert("Error", $"ORS failed: {response.StatusCode}\n{error}", "OK");
+        }
+    }
+
+    private void DrawRouteOnMap(string geoJson, List<(double lon, double lat)> stops)
+    {
+        mapView.MapElements.Clear();
+        
+        var polyline = new Polyline
+        {
+            StrokeColor = Colors.Blue,
+            StrokeWidth = 8
+        };
+
+        using (JsonDocument doc = JsonDocument.Parse(geoJson))
+        {
+            var features = doc.RootElement.GetProperty("features");
+            var geometry = features[0].GetProperty("geometry");
+            var coordinates = geometry.GetProperty("coordinates");
+
+            foreach (var coordinate in coordinates.EnumerateArray())
+            {
+                var longitude = coordinate[0].GetDouble();
+                var latitude = coordinate[1].GetDouble();
+                polyline.Geopath.Add(new Location(latitude, longitude));
+            }
+        }
+        
+        mapView.MapElements.Add(polyline);
+
+        // Add pins for the stops
+        for (int i = 0; i < stops.Count; i++)
+        {
+            var stop = stops[i];
+            var pin = new Pin
+            {
+                Label = $"Stop {i + 1}",
+                Location = new Location(stop.lat, stop.lon),
+                Type = PinType.Place
+            };
+            mapView.Pins.Add(pin);
+        }
+        
+        if (polyline.Geopath.Any())
+        {
+            mapView.MoveToRegion(MapSpan.FromCenterAndRadius(polyline.Geopath[0], Distance.FromKilometers(2.0)));
         }
     }
 }
