@@ -1,41 +1,31 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="bezorgapp.MainPage"
-             Title="                     Home">
-    
-    <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="scan.avif"
-                     Order="Primary"
-                     Priority="0"
-                     Clicked="OnActionButtonClicked" />
-    </ContentPage.ToolbarItems>
-    
-    <Page.Behaviors>
-        <mct:StatusBarBehavior StatusBarColor="DarkOrange" />
-    </Page.Behaviors>
+             Title="Dashboard">
 
-    <VerticalStackLayout
-        Spacing="0">
+    <VerticalStackLayout VerticalOptions="Start" Padding="20, 40, 20, 20" Spacing="25">
+
+        <Label 
+            Text="Welkom, Bezorger!"
+            FontSize="24"
+            FontAttributes="Bold"
+            HorizontalOptions="Center" />
+
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+
+            <Button Grid.Column="0"
+                    x:Name="BekijkOrdersButton"
+                    Text="Bekijk Orders" 
+                    Clicked="OnBekijkOrdersClicked"
+                    Style="{StaticResource PrimaryButton}" />
+
+            <Button Grid.Column="1"
+                    x:Name="ScanBarcodeButton"
+                    Text="Scan Barcode" 
+                    Clicked="OnActionButtonClicked"
+                    Style="{StaticResource SecondaryButton}" />
+        </Grid>
         
-        <BoxView 
-            HeightRequest="1"
-            BackgroundColor="Gray"
-            HorizontalOptions="Fill" />
-        
-        <VerticalStackLayout
-            VerticalOptions="CenterAndExpand"
-            HorizontalOptions="Center"
-            Spacing="25"
-            Margin="0,20,0,0">
-            
-            <Button 
-                Text="Bekijk Orders"
-                Clicked="OnBekijkOrdersClicked"
-                HorizontalOptions="Center" />
-
-        </VerticalStackLayout>
-
     </VerticalStackLayout>
-    
+
 </ContentPage>

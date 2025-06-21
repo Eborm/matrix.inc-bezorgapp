@@ -1,47 +1,51 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="bezorgapp.OrdersPage"
              xmlns:models="clr-namespace:bezorgapp.Models"
-             Title="Orders">
-    
-    <Grid RowDefinitions="Auto, *">
-        <Label Grid.Row="0" Text="Alle Orders" FontSize="Large" FontAttributes="Bold" Margin="10"/>
+             x:Class="bezorgapp.OrdersPage"
+             Title="Mijn Orders">
 
-        <Grid Grid.Row="1">
-            
-            <CollectionView x:Name="OrdersCollectionView">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Order">
-                        <Frame Margin="10" Padding="10" BorderColor="LightGray" CornerRadius="5">
-                            
-                            <Frame.GestureRecognizers>
-                                <TapGestureRecognizer 
-                                    Tapped="OnOrderTapped" 
-                                    CommandParameter="{Binding .}"/>
-                            </Frame.GestureRecognizers>
-                            
-                            <VerticalStackLayout Spacing="8">
-                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
-                                    <Label Grid.Column="0" Text="{Binding Id, StringFormat='Order ID: {0}'}" FontAttributes="Bold" FontSize="16"/>
-                                    <Label Grid.Column="1" Text="{Binding OrderDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Gray" HorizontalOptions="End"/>
-                                    <Label Grid.Column="1" Grid.Row="0" Text="{Binding DeliveryState}" TextColor="DarkSlateGray" HorizontalOptions="End" VerticalOptions="End" TranslationX="-100" TranslationY="-3"/>
-                                </Grid>
-                                <BoxView HeightRequest="1" Color="LightGray"/>
-                                <Label Text="{Binding Customer.Name}" FontAttributes="Bold" FontSize="14"/>
-                                <Label Text="{Binding Customer.Address}"/>
-                            </VerticalStackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+    <Grid>
+        <CollectionView x:Name="OrdersCollectionView"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Order">
+                    <Frame Style="{StaticResource CardView}" Margin="15,10">
+                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="10">
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource TitleLabel}" FontSize="18">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Order #" />
+                                        <Span Text="{Binding Id}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="1" Grid.Column="0" Text="{Binding Customer.Name}" Style="{StaticResource BodyLabel}" FontAttributes="Italic"/>
+                            <Label Grid.Row="2" Grid.Column="0" Text="{Binding Customer.Address}" Style="{StaticResource BodyLabel}" />
 
-            <ActivityIndicator x:Name="loadingIndicator"
-                               IsRunning="True"
-                               IsVisible="False"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center" 
-                               Color="{StaticResource Primary}"/>
-        </Grid>
+                            <Frame Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Padding="10,5" CornerRadius="15" VerticalOptions="Center">
+                                <Frame.Triggers>
+                                    <DataTrigger TargetType="Frame" Binding="{Binding DeliveryState}" Value="In afwachting">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource Warning}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Frame" Binding="{Binding DeliveryState}" Value="Onderweg">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource Info}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Frame" Binding="{Binding DeliveryState}" Value="Afgeleverd">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource Success}" />
+                                    </DataTrigger>
+                                </Frame.Triggers>
+                                <Label Text="{Binding DeliveryState}" TextColor="White" FontSize="12" FontAttributes="Bold"/>
+                            </Frame>
+
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnOrderTapped" CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ActivityIndicator x:Name="loadingIndicator" IsRunning="True" IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" />
     </Grid>
 </ContentPage>

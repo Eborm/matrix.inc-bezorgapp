@@ -37,8 +37,10 @@ namespace bezorgapp
                         var image = new Image
                         {
                             Source = url,
-                            HeightRequest = 200,
-                            Margin = new Thickness(0, 10)
+                            Margin = new Thickness(5),
+                            HeightRequest = 120, 
+                            WidthRequest = 120,
+                            Aspect = Aspect.AspectFill
                         };
 
                         var tapGesture = new TapGestureRecognizer

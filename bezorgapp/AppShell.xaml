@@ -4,14 +4,33 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:bezorgapp"
-    FlyoutBehavior="Flyout">
+    
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.TitleColor="White"
+    Shell.ForegroundColor="White">
 
-    <FlyoutItem Title="Home" Icon="home.png">
-        <ShellContent Title="                    Home" ContentTemplate="{DataTemplate local:MainPage}" />
+    <Shell.FlyoutHeader>
+        <VerticalStackLayout Padding="20" BackgroundColor="{StaticResource PrimaryDark}">
+            <Label 
+                Text="BezorgApp" 
+                TextColor="White" 
+                FontAttributes="Bold" 
+                FontSize="20" />
+        </VerticalStackLayout>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Dashboard">
+        <ShellContent
+            Title="Dashboard"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
     </FlyoutItem>
     
-    <FlyoutItem Title="Settings" Icon="Settings.png">
-        <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" />
+    <FlyoutItem Title="Instellingen">
+        <ShellContent
+            Title="Instellingen"
+            ContentTemplate="{DataTemplate local:SettingsPage}"
+            Route="SettingsPage" />
     </FlyoutItem>
 
 </Shell>
