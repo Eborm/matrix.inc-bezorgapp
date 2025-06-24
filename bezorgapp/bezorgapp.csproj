@@ -61,7 +61,15 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+		<PackageReference Include="Plugin.Firebase.Auth" Version="3.0.0" />
+		<PackageReference Include="Plugin.Firebase.CloudMessaging" Version="3.0.0" />
+		<PackageReference Include="Plugin.Firebase.Core" Version="3.0.0" />
+		<PackageReference Include="Plugin.Firebase.Firestore" Version="3.0.0" />
 		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.4.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
+		<PackageReference Include="Xamarin.AndroidX.Collection" Version="1.4.0.5" />
 	</ItemGroup>
 
 </Project>

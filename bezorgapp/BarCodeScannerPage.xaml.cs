@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using bezorgapp.Services;
 using bezorgapp.Models;
+using Plugin.Firebase.Firestore;
 
 namespace bezorgapp
 {
@@ -59,6 +60,7 @@ namespace bezorgapp
                         var (inProgressSuccess, inProgressError) = await _apiService.MarkAsInProgressAsync(foundOrder.Id);
                         if (inProgressSuccess)
                         {
+                            await SaveScanToFirestore(eersteResultaat); // <-- Firestore opslag
                             await DisplayAlert("Succes", $"Order {foundOrder.Id} is nu 'Onderweg'.", "OK");
                             await Navigation.PopAsync();
                         }
@@ -70,12 +72,14 @@ namespace bezorgapp
 
                     case "Onderweg":
                         // Order is al onderweg, vraag om een foto te maken
+                        await SaveScanToFirestore(eersteResultaat); // <-- Firestore opslag
                         await DisplayAlert("Info", "Order is al onderweg. Maak een foto om de aflevering te voltooien.", "OK");
                         await Navigation.PushAsync(new CreatePicture(foundOrder.Id, true));
                         break;
 
                     default:
                         // Geen automatische actie voor deze status
+                        await SaveScanToFirestore(eersteResultaat); // <-- Firestore opslag
                         await DisplayAlert("Info", $"Er is geen automatische actie voor order {foundOrder.Id} met status '{foundOrder.DeliveryState}'.", "OK");
                         barcodeReader.IsDetecting = true;
                         break;
@@ -83,6 +87,20 @@ namespace bezorgapp
 
                 loadingIndicator.IsVisible = false; // Verberg laadindicator
             });
+        }
+
+        // Functie om scan op te slaan in Firestore
+        private async Task SaveScanToFirestore(string barcode)
+        {
+            var scanData = new
+            {
+                barcode = barcode,
+                timestamp = DateTime.UtcNow
+            };
+
+            await CrossFirebaseFirestore.Current
+                .GetCollection("scans")
+                .AddDocumentAsync(scanData);
         }
 
         // Start de barcode scanner als de pagina verschijnt
