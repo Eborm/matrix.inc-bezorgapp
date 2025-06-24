@@ -4,16 +4,17 @@
              x:Class="bezorgapp.OrdersPage"
              Title="Mijn Orders">
     <Grid>
-        <VerticalStackLayout>
+        <Grid RowDefinitions="Auto,*">
             <Button x:Name="Refresh"
                     Text="Refresh"
                     Clicked="OnRefreshClicked"
                     Style="{StaticResource PrimaryButton}"
                     HorizontalOptions="Center"
-                    Margin="0,20,0,10" />
-            
+                    Margin="0,20,0,10"
+                    Grid.Row="0" />
             <CollectionView x:Name="OrdersCollectionView"
-                            SelectionMode="None">
+                            SelectionMode="None"
+                            Grid.Row="1">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Order">
                         <Frame Style="{StaticResource CardView}" Margin="15,10">
@@ -52,7 +53,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </VerticalStackLayout>
+        </Grid>
         <ActivityIndicator x:Name="loadingIndicator" IsRunning="True" IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" />
     </Grid>
 </ContentPage>
