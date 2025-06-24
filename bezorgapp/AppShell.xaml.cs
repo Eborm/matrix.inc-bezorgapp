@@ -1,4 +1,7 @@
-﻿namespace bezorgapp
+﻿// AppShell.xaml.csAdd commentMore actions
+// Deze klasse definieert de navigatiestructuur van de applicatie.
+
+namespace bezorgapp
 {
     public partial class AppShell : Shell
     {
@@ -6,6 +9,7 @@
         {
             InitializeComponent();
             
+            // Registreer routes voor navigatie naar pagina's binnen de app
             Routing.RegisterRoute(nameof(OrdersPage), typeof(OrdersPage));
             Routing.RegisterRoute(nameof(PhotoGalleryPage), typeof(PhotoGalleryPage));
             Routing.RegisterRoute(nameof(PhotoDetailPage), typeof(PhotoDetailPage));

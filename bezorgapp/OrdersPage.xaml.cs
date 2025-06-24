@@ -40,10 +40,10 @@ namespace bezorgapp
             }
         }
 
-        // Als de gebruiker op de ververs-knop drukt, herlaad de pagina
+        // Als de gebruiker op de ververs-knop drukt, herlaad de data
         public async void OnRefreshClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new OrdersPage());
+            await LoadOrdersAsync();
         }
 
         // Wanneer een order wordt aangetikt, laat een actiemenu zien
@@ -61,7 +61,7 @@ namespace bezorgapp
                 "Markeer als Afgeleverd",
                 "Bekijk foto's");
 
-            (bool success, string errorMessage) result = (false, "Geen actie gekozen.");
+            (bool success, string? errorMessage) result = (false, "Geen actie gekozen.");
             bool actionChosen = false;
 
             loadingIndicator.IsVisible = true;
