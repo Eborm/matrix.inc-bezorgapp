@@ -37,6 +37,11 @@ namespace bezorgapp
             }
         }
 
+        public async void OnRefreshClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new OrdersPage());
+        }
+
         private async void OnOrderTapped(object sender, TappedEventArgs e)
 {
     if (e.Parameter is not Order selectedOrder)

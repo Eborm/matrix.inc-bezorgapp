@@ -3,8 +3,17 @@
              xmlns:models="clr-namespace:bezorgapp.Models"
              x:Class="bezorgapp.OrdersPage"
              Title="Mijn Orders">
-
+    
+    
+    
     <Grid>
+        
+        <Button Grid.Column="0"
+                x:Name="Refresh"
+                Text="Refresh" 
+                Clicked="OnRefreshClicked"
+                Style="{StaticResource PrimaryButton}" />
+        
         <CollectionView x:Name="OrdersCollectionView"
                         SelectionMode="None">
             <CollectionView.ItemTemplate>
