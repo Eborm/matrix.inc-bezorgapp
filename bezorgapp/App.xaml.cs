@@ -6,6 +6,9 @@
         {
             InitializeComponent();
 
+            bool isDarkMode = Preferences.Get("DarkModeEnabled", false);
+            UserAppTheme = isDarkMode ? AppTheme.Dark : AppTheme.Light;
+
             MainPage = new AppShell();
         }
     }

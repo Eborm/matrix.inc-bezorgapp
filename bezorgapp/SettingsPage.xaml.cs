@@ -5,13 +5,11 @@ namespace bezorgapp
         public SettingsPage()
         {
             InitializeComponent();
+            // Only set the toggle state - theme is already applied at app startup
             bool isDarkMode = Preferences.Get("DarkModeEnabled", false);
             ThemeSwitch.IsToggled = isDarkMode;
-            if (Application.Current != null)
-            {
-                Application.Current.UserAppTheme = isDarkMode ? AppTheme.Dark : AppTheme.Light;
-            }
         }
+        
         private void OnThemeToggled(object sender, ToggledEventArgs e)
         {
             if (Application.Current != null)
