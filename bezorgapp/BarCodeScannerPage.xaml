@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!--
+  BarCodeScannerPage.xaml
+  Deze pagina bevat de gebruikersinterface voor het scannen van barcodes met behulp van de camera.
+-->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
              x:Class="bezorgapp.BarcodeScannerPage"
              Title="Scan Barcode">
     <Grid>
+        <!-- CameraBarcodeReaderView: Toont camerabeeld en scant barcodes -->
         <zxing:CameraBarcodeReaderView
             x:Name="barcodeReader"
             BarcodesDetected="BarcodesDetected"
             HorizontalOptions="Fill" 
             VerticalOptions="Fill" />
             
+        <!-- ActivityIndicator: Laat een laad-icoon zien tijdens het verwerken -->
         <ActivityIndicator
             x:Name="loadingIndicator"
             IsRunning="True"
@@ -18,6 +24,7 @@
             Color="White"
             HorizontalOptions="Center"
             VerticalOptions="Center" />
+        <!-- Label: Toont scanresultaat of instructie onderaan het scherm -->
         <Label
             x:Name="resultLabel"
             Text="Scan een barcode..."

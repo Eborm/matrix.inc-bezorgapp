@@ -1,9 +1,13 @@
+<!-- PhotoDetailPage.xaml - Detailweergave van een foto -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="bezorgapp.PhotoDetailPage"
              Title="Foto detail">
+    <!-- ScrollView zodat grote foto's gescrold kunnen worden -->
     <ScrollView>
+        <!-- Verticale layout met wat padding en ruimte tussen elementen -->
         <VerticalStackLayout Padding="10" Spacing="10">
+            <!-- De foto die in detail wordt getoond -->
             <Image x:Name="DetailImage" Aspect="AspectFit" />
         </VerticalStackLayout>
     </ScrollView>

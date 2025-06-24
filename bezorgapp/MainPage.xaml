@@ -1,24 +1,30 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<!-- MainPage.xaml - Dashboard voor de bezorger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="bezorgapp.MainPage"
              Title="Dashboard">
 
+    <!-- Verticale layout met padding en ruimte tussen de onderdelen -->
     <VerticalStackLayout VerticalOptions="Start" Padding="20, 40, 20, 20" Spacing="25">
 
+        <!-- Welkomsttekst voor de bezorger -->
         <Label 
             Text="Welkom, Bezorger!"
             FontSize="24"
             FontAttributes="Bold"
             HorizontalOptions="Center" />
 
+        <!-- Grid met twee knoppen naast elkaar -->
         <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
 
+            <!-- Knop om naar het orders-overzicht te gaan -->
             <Button Grid.Column="0"
                     x:Name="BekijkOrdersButton"
                     Text="Bekijk Orders" 
                     Clicked="OnBekijkOrdersClicked"
                     Style="{StaticResource PrimaryButton}" />
 
+            <!-- Knop om de barcodescanner te openen -->
             <Button Grid.Column="1"
                     x:Name="ScanBarcodeButton"
                     Text="Scan Barcode" 

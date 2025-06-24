@@ -1,24 +1,30 @@
+<!-- OrdersPage.xaml - Overzicht van bestellingen voor de bezorger -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:bezorgapp.Models"
              x:Class="bezorgapp.OrdersPage"
              Title="Mijn Orders">
+    <!-- Hoofdgrid met een refresh-knop en de lijst met orders -->
     <Grid>
         <Grid RowDefinitions="Auto,*">
+            <!-- Ververs-knop voor het ophalen van de nieuwste orders -->
             <Button x:Name="Refresh"
-                    Text="Refresh"
+                    Text="Ververs lijst"
                     Clicked="OnRefreshClicked"
                     Style="{StaticResource PrimaryButton}"
                     HorizontalOptions="Center"
                     Margin="0,20,0,10"
                     Grid.Row="0" />
+            <!-- Lijst van bestellingen -->
             <CollectionView x:Name="OrdersCollectionView"
                             SelectionMode="None"
                             Grid.Row="1">
                 <CollectionView.ItemTemplate>
+                    <!-- Elke order wordt weergegeven als een kaartje -->
                     <DataTemplate x:DataType="models:Order">
                         <Frame Style="{StaticResource CardView}" Margin="15,10">
                             <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="10">
+                                <!-- Ordernummer -->
                                 <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource TitleLabel}" FontSize="18">
                                     <Label.FormattedText>
                                         <FormattedString>
@@ -27,11 +33,15 @@
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
+                                <!-- Naam van de klant -->
                                 <Label Grid.Row="1" Grid.Column="0" Text="{Binding Customer.Name}" Style="{StaticResource BodyLabel}" FontAttributes="Italic"/>
+                                <!-- Adres van de klant -->
                                 <Label Grid.Row="2" Grid.Column="0" Text="{Binding Customer.Address}" Style="{StaticResource BodyLabel}" />
 
+                                <!-- Visuele status van de bezorging -->
                                 <Frame Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Padding="10,5" CornerRadius="15" VerticalOptions="Center">
                                     <Frame.Triggers>
+                                        <!-- Kleur afhankelijk van de status -->
                                         <DataTrigger TargetType="Frame" Binding="{Binding DeliveryState}" Value="In afwachting">
                                             <Setter Property="BackgroundColor" Value="{StaticResource Warning}" />
                                         </DataTrigger>
@@ -45,6 +55,7 @@
                                     <Label Text="{Binding DeliveryState}" TextColor="White" FontSize="12" FontAttributes="Bold"/>
                                 </Frame>
 
+                                <!-- Tik op een order voor meer details -->
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnOrderTapped" CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
@@ -54,6 +65,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </Grid>
+        <!-- Laadindicator in het midden van het scherm -->
         <ActivityIndicator x:Name="loadingIndicator" IsRunning="True" IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" />
     </Grid>
 </ContentPage>

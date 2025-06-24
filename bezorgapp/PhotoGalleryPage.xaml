@@ -1,7 +1,10 @@
+<!-- PhotoGalleryPage.xaml - Overzicht van alle foto's bij een order -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="bezorgapp.PhotoGalleryPage">
+    <!-- ScrollView zodat je door veel foto's kunt scrollen -->
     <ScrollView>
+        <!-- FlexLayout voor het tonen van foto's in een flexibele grid-achtige structuur -->
         <FlexLayout x:Name="ImagesLayout"
                     Wrap="Wrap"
                     Direction="Row"

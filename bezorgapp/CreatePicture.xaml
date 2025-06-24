@@ -1,21 +1,28 @@
+<!-- CreatePicture.xaml - Pagina voor het maken en uploaden van een afleverfoto -->
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="bezorgapp.CreatePicture">
 
+    <!-- ScrollView zodat de pagina ook op kleine schermen bruikbaar is -->
     <ScrollView>
+        <!-- Hoofdlayout met verticale stapeling en padding -->
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
             
+            <!-- Blok voor het tonen van de gemaakte of gekozen foto -->
             <VerticalStackLayout Padding="20" Spacing="20">
                 <Image x:Name="CapturedImage" HeightRequest="100" />
             </VerticalStackLayout>
             
+            <!-- Knop om een foto te maken en direct te uploaden -->
             <Button Text="Maak en upload foto" Clicked="OnTakePhotoClicked" />
             
+            <!-- Knop om een bestaande foto uit de galerij te kiezen -->
             <Button Text="Kies foto uit galerij" Clicked="OnPickPhotoClicked" />
             
+            <!-- Knop om de galerij van deze order te tonen -->
             <Button Text="Toon foto's" Clicked="OnShowGalleryClicked" />
         </VerticalStackLayout>
     </ScrollView>

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  AppShell.xaml
+  Definieert de navigatiestructuur en het menu van de applicatie.
+-->
 <Shell
     x:Class="bezorgapp.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -9,6 +13,7 @@
     Shell.TitleColor="White"
     Shell.ForegroundColor="White">
 
+    <!-- FlyoutHeader: Koptekst bovenin het menu -->
     <Shell.FlyoutHeader>
         <VerticalStackLayout Padding="20" BackgroundColor="{StaticResource PrimaryDark}">
             <Label 
@@ -19,6 +24,7 @@
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
 
+    <!-- FlyoutItem: Menu-item voor Dashboard -->
     <FlyoutItem Title="Dashboard">
         <ShellContent
             Title="Dashboard"
@@ -26,6 +32,7 @@
             Route="MainPage" />
     </FlyoutItem>
     
+    <!-- FlyoutItem: Menu-item voor Instellingen -->
     <FlyoutItem Title="Instellingen">
         <ShellContent
             Title="Instellingen"

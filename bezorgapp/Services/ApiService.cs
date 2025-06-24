@@ -7,6 +7,8 @@ using System;
 
 namespace bezorgapp.Services;
 
+// ApiService.cs
+// Deze service verzorgt alle communicatie met de externe BezorgApp API.
 public class ApiService
 {
     private readonly HttpClient _httpClient;
@@ -17,9 +19,11 @@ public class ApiService
     {
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(BaseUrl);
+        // Voeg de API-sleutel toe aan elke request
         _httpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
     }
 
+    // Haal alle bestellingen op die aan de bezorger zijn toegewezen
     public async Task<List<Order>> GetOrdersAsync()
     {
         try
@@ -38,6 +42,7 @@ public class ApiService
         return new List<Order>();
     }
 
+    // Markeer een bestelling als 'In Progress' (onderweg)
     public async Task<(bool Success, string ErrorMessage)> MarkAsInProgressAsync(int orderId)
     {
         var url = $"/api/DeliveryStates/StartDelivery?OrderId={orderId}";
@@ -55,6 +60,7 @@ public class ApiService
         }
     }
     
+    // Markeer een bestelling als 'Afgeleverd' (voltooid)
     public async Task<(bool Success, string ErrorMessage)> MarkAsCompletedAsync(int orderId)
     {
         var url = $"/api/DeliveryStates/CompleteDelivery?OrderId={orderId}";

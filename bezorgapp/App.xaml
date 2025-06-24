@@ -1,9 +1,15 @@
-﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<!--
+  App.xaml
+  Definieert globale resources en stijlen voor de applicatie.
+-->
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:bezorgapp"
              x:Class="bezorgapp.App">
     <Application.Resources>
+        <!-- ResourceDictionary: Bevat alle gedeelde resources en stijlen -->
         <ResourceDictionary>
+            <!-- Voeg externe resource dictionaries toe, zoals kleuren en stijlen -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />

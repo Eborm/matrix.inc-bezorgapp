@@ -9,16 +9,19 @@ namespace bezorgapp
 {
     public partial class PhotoGalleryPage : ContentPage
     {
+        // Het ordernummer waarvoor de foto's worden opgehaald
         private readonly int _orderId;
 
+        // Constructor ontvangt het ordernummer
         public PhotoGalleryPage(int orderId)
         {
-            InitializeComponent();
+            InitializeComponent(); // Koppel aan de XAML-layout
             _orderId = orderId;
-            Title = $"Foto's voor Order {orderId}";
-            LoadImages();
+            Title = $"Foto's voor Order {orderId}"; // Zet de paginatitel
+            LoadImages(); // Laad direct de foto's bij het openen
         }
 
+        // Haal de foto's op van de server en toon ze in de FlexLayout
         private async void LoadImages()
         {
             var requestUrl = $"https://bezorgapp-api-1234.azurewebsites.net/api/upload/order/{_orderId}";
@@ -26,12 +29,13 @@ namespace bezorgapp
             try
             {
                 using var httpClient = new HttpClient();
-                var imageUrls = await httpClient.GetFromJsonAsync<List<string>>(requestUrl);
+                var imageUrls = await httpClient.GetFromJsonAsync<List<string>>(requestUrl); // Haal lijst met foto-urls op
 
-                ImagesLayout.Children.Clear();
+                ImagesLayout.Children.Clear(); // Maak de layout eerst leeg
 
                 if (imageUrls != null && imageUrls.Any())
                 {
+                    // Voeg elke foto toe als een Image met klikfunctionaliteit
                     foreach (var url in imageUrls)
                     {
                         var image = new Image
@@ -43,6 +47,7 @@ namespace bezorgapp
                             Aspect = Aspect.AspectFill
                         };
 
+                        // Voeg een tap-gesture toe om de foto in detail te bekijken
                         var tapGesture = new TapGestureRecognizer
                         {
                             Command = new Command(() =>
@@ -57,11 +62,13 @@ namespace bezorgapp
                 }
                 else
                 {
+                    // Geen foto's gevonden voor deze order
                     ImagesLayout.Children.Add(new Label { Text = "Geen foto's gevonden voor deze order.", HorizontalOptions = LayoutOptions.Center, Margin = new Thickness(20) });
                 }
             }
             catch (Exception ex)
             {
+                // Foutmelding als het ophalen mislukt
                 await DisplayAlert("Fout", $"Kon foto's niet laden: {ex.Message}", "OK");
             }
         }

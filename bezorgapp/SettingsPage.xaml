@@ -1,28 +1,34 @@
+<!-- SettingsPage.xaml - Instellingenpagina voor de gebruiker -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="bezorgapp.SettingsPage"
              Title="                   Settings">
 
+    <!-- Hoofdlayout met verticale stapeling -->
     <VerticalStackLayout
             Spacing="0">
         
+            <!-- Scheidingslijn bovenaan -->
             <BoxView 
                 HeightRequest="1"
                 BackgroundColor="Gray"
                 HorizontalOptions="Fill" />
         
+            <!-- Centraal blok met instellingen -->
             <VerticalStackLayout
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
                 Spacing="25"
                 Margin="0,20,0,0">
             
+                <!-- Rij voor dark mode instelling -->
                 <HorizontalStackLayout 
                     Spacing="10"
                     HorizontalOptions="Center">
                     <Label 
                         Text="Dark Mode"
                         VerticalOptions="Center" />
+                    <!-- Schakelaar voor dark mode -->
                     <Switch 
                         x:Name="ThemeSwitch"
                         Toggled="OnThemeToggled"

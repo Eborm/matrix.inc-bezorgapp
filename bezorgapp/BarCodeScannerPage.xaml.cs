@@ -8,26 +8,29 @@ namespace bezorgapp
 {
     public partial class BarcodeScannerPage : ContentPage
     {
+        // Service voor communicatie met de backend API
         private readonly ApiService _apiService;
 
         public BarcodeScannerPage()
         {
-            InitializeComponent();
+            InitializeComponent(); // Koppel aan de XAML-layout
             _apiService = new ApiService();
         }
 
+        // Wordt aangeroepen als er barcodes zijn gedetecteerd
         private void BarcodesDetected(object sender, ZXing.Net.Maui.BarcodeDetectionEventArgs e)
         {
             var eersteResultaat = e.Results?.FirstOrDefault()?.Value;
             if (string.IsNullOrEmpty(eersteResultaat))
-                return;
+                return; // Geen barcode gevonden
             
-            barcodeReader.IsDetecting = false;
+            barcodeReader.IsDetecting = false; // Stop met scannen
             
             Dispatcher.Dispatch(async () =>
             {
-                loadingIndicator.IsVisible = true;
+                loadingIndicator.IsVisible = true; // Laat laadindicator zien
 
+                // Controleer of de barcode een geldig ordernummer is
                 if (!int.TryParse(eersteResultaat, out int scannedOrderId))
                 {
                     await DisplayAlert("Fout", "De gescande barcode is geen geldig ordernummer.", "OK");
@@ -36,6 +39,7 @@ namespace bezorgapp
                     return;
                 }
 
+                // Haal de orders van de gebruiker op
                 var userOrders = await _apiService.GetOrdersAsync();
                 var foundOrder = userOrders.FirstOrDefault(o => o.Id == scannedOrderId);
 
@@ -47,9 +51,11 @@ namespace bezorgapp
                     return;
                 }
 
+                // Bepaal de volgende actie op basis van de status van de order
                 switch (foundOrder.DeliveryState)
                 {
                     case "In afwachting":
+                        // Zet de order op 'Onderweg'
                         var (inProgressSuccess, inProgressError) = await _apiService.MarkAsInProgressAsync(foundOrder.Id);
                         if (inProgressSuccess)
                         {
@@ -63,21 +69,23 @@ namespace bezorgapp
                         break;
 
                     case "Onderweg":
+                        // Order is al onderweg, vraag om een foto te maken
                         await DisplayAlert("Info", "Order is al onderweg. Maak een foto om de aflevering te voltooien.", "OK");
                         await Navigation.PushAsync(new CreatePicture(foundOrder.Id, true));
                         break;
 
                     default:
+                        // Geen automatische actie voor deze status
                         await DisplayAlert("Info", $"Er is geen automatische actie voor order {foundOrder.Id} met status '{foundOrder.DeliveryState}'.", "OK");
                         barcodeReader.IsDetecting = true;
                         break;
                 }
 
-                loadingIndicator.IsVisible = false;
+                loadingIndicator.IsVisible = false; // Verberg laadindicator
             });
-            // --- EINDE AANPASSING ---
         }
 
+        // Start de barcode scanner als de pagina verschijnt
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -88,6 +96,7 @@ namespace bezorgapp
             });
         }
 
+        // Stop de barcode scanner als de pagina verdwijnt
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
