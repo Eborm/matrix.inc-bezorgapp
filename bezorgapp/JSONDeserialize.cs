@@ -1,4 +1,6 @@
-﻿public class DeliveryService
+﻿using bezorgapp.Models;
+
+public class DeliveryService
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -14,14 +16,4 @@ public class DeliveryState
     public DeliveryService? DeliveryService { get; set; }
 
     public Order? Order { get; set; }
-}
-
-public class Order
-{
-    public int Id { get; set; }
-    public DateTime OrderDate { get; set; }
-    public int CustomerId { get; set; }
-    public List<DeliveryState?> DeliveryStates { get; set; }
-
-    public string DeliveryState { get; set; } // "In afwachting", "Onderweg", "Afgeleverd"
 }
