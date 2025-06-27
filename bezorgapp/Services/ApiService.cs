@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -54,9 +55,9 @@ public class ApiService
             string errorContent = await response.Content.ReadAsStringAsync();
             return (false, $"Statuscode: {response.StatusCode}\nServer-respons: {errorContent}");
         }
-        catch (Exception ex)
+        catch
         {
-            return (false, $"Uitzondering: {ex.Message}");
+            return (false, $"Uitzondering:");
         }
     }
     

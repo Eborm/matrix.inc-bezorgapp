@@ -5,7 +5,7 @@
              Title="Dashboard">
 
     <!-- Verticale layout met padding en ruimte tussen de onderdelen -->
-    <VerticalStackLayout VerticalOptions="Start" Padding="20, 40, 20, 20" Spacing="25">
+    <VerticalStackLayout VerticalOptions="Start" HorizontalOptions="FillAndExpand" Padding="5, 40, 5, 20" Spacing="10">
 
         <!-- Welkomsttekst voor de bezorger -->
         <Label 
@@ -14,22 +14,37 @@
             FontAttributes="Bold"
             HorizontalOptions="Center" />
 
-        <!-- Grid met twee knoppen naast elkaar -->
-        <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
-
+        <!-- Grid met drie knoppen naast elkaar -->
+        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4" HorizontalOptions="FillAndExpand" VerticalOptions="Start">
             <!-- Knop om naar het orders-overzicht te gaan -->
             <Button Grid.Column="0"
                     x:Name="BekijkOrdersButton"
                     Text="Bekijk Orders" 
                     Clicked="OnBekijkOrdersClicked"
-                    Style="{StaticResource PrimaryButton}" />
+                    Style="{StaticResource PrimaryButton}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Start"
+                    HeightRequest="48" />
+
+            <!-- Knop om de route te starten -->
+            <Button Grid.Column="1"
+                    x:Name="mapknop"
+                    Text="Start Route"
+                    Clicked="OnShowMapClicked"
+                    Style="{StaticResource SecondaryButton}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Start"
+                    HeightRequest="48" />
 
             <!-- Knop om de barcodescanner te openen -->
-            <Button Grid.Column="1"
+            <Button Grid.Column="2"
                     x:Name="ScanBarcodeButton"
                     Text="Scan Barcode" 
                     Clicked="OnActionButtonClicked"
-                    Style="{StaticResource SecondaryButton}" />
+                    Style="{StaticResource SecondaryButton}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Start"
+                    HeightRequest="48" />
         </Grid>
         
     </VerticalStackLayout>
