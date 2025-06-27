@@ -8,23 +8,35 @@ using System;
 
 namespace bezorgapp.Services;
 
-// ApiService.cs
-// Deze service verzorgt alle communicatie met de externe BezorgApp API.
 public class ApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _apiKey = "APIKEY_BEZORGAPP";
     public string BaseUrl { get; } = "https://bezorgapp-api-1234.azurewebsites.net";
 
     public ApiService()
     {
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(BaseUrl);
-        // Voeg de API-sleutel toe aan elke request
-        _httpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
     }
-
-    // Haal alle bestellingen op die aan de bezorger zijn toegewezen
+    
+    public async Task<Order?> GetOrderByIdAsync(int orderId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/Order/{orderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var order = await response.Content.ReadFromJsonAsync<Order>();
+                return order;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching order by ID: {ex.Message}");
+        }
+        return null;
+    }
+    
     public async Task<List<Order>> GetOrdersAsync()
     {
         try
@@ -55,13 +67,12 @@ public class ApiService
             string errorContent = await response.Content.ReadAsStringAsync();
             return (false, $"Statuscode: {response.StatusCode}\nServer-respons: {errorContent}");
         }
-        catch
+        catch(Exception ex)
         {
-            return (false, $"Uitzondering:");
+            return (false, $"Uitzondering: {ex.Message}");
         }
     }
     
-    // Markeer een bestelling als 'Afgeleverd' (voltooid)
     public async Task<(bool Success, string ErrorMessage)> MarkAsCompletedAsync(int orderId)
     {
         var url = $"/api/DeliveryStates/CompleteDelivery?OrderId={orderId}";
