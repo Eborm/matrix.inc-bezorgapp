@@ -21,18 +21,25 @@
                 Spacing="25"
                 Margin="0,20,0,0">
             
-                <!-- Rij voor dark mode instelling -->
+                <!-- Rij voor thema instelling -->
                 <HorizontalStackLayout 
                     Spacing="10"
                     HorizontalOptions="Center">
                     <Label 
-                        Text="Dark Mode"
+                        Text="Thema"
                         VerticalOptions="Center" />
-                    <!-- Schakelaar voor dark mode -->
-                    <Switch 
-                        x:Name="ThemeSwitch"
-                        Toggled="OnThemeToggled"
-                        VerticalOptions="Center" />
+                    <!-- Picker voor thema keuze -->
+                    <Picker
+                        x:Name="ThemePicker"
+                        SelectedIndexChanged="OnThemePickerChanged"
+                        VerticalOptions="Center"
+                        WidthRequest="150">
+                        <Picker.Items>
+                            <x:String>Systeem</x:String>
+                            <x:String>Licht</x:String>
+                            <x:String>Donker</x:String>
+                        </Picker.Items>
+                    </Picker>
                 </HorizontalStackLayout>
 
             </VerticalStackLayout>

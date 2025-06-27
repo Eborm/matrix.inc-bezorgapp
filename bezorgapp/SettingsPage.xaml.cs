@@ -6,21 +6,42 @@ namespace bezorgapp
         public SettingsPage()
         {
             InitializeComponent(); // Koppel aan de XAML-layout
-            // Haal de huidige dark mode-instelling op en zet de schakelaar in de juiste stand
-            bool isDarkMode = Preferences.Get("DarkModeEnabled", false);
-            ThemeSwitch.IsToggled = isDarkMode;
+            // Haal de huidige thema-instelling op, standaard 'System'
+            string theme = Preferences.Get("AppTheme", "System");
+            int selectedIndex = theme switch
+            {
+                "Light" => 1,
+                "Dark" => 2,
+                _ => 0 // "System"
+            };
+            ThemePicker.SelectedIndex = selectedIndex;
+            // Pas het thema direct toe bij openen
+            ApplyTheme(theme);
         }
         
-        // Wordt aangeroepen als de gebruiker de dark mode-schakelaar omzet
-        private void OnThemeToggled(object sender, ToggledEventArgs e)
+        // Wordt aangeroepen als de gebruiker de thema-picker wijzigt
+        private void OnThemePickerChanged(object sender, EventArgs e)
         {
-            if (Application.Current != null)
+            if (ThemePicker.SelectedIndex < 0) return;
+            string selectedTheme = ThemePicker.SelectedIndex switch
             {
-                // Pas het thema van de app direct aan
-                Application.Current.UserAppTheme = e.Value ? AppTheme.Dark : AppTheme.Light;
-                // Sla de voorkeur van de gebruiker op
-                Preferences.Set("DarkModeEnabled", e.Value);
-            }
+                1 => "Light",
+                2 => "Dark",
+                _ => "System"
+            };
+            Preferences.Set("AppTheme", selectedTheme);
+            ApplyTheme(selectedTheme);
+        }
+
+        private void ApplyTheme(string theme)
+        {
+            if (Application.Current == null) return;
+            Application.Current.UserAppTheme = theme switch
+            {
+                "Light" => AppTheme.Light,
+                "Dark" => AppTheme.Dark,
+                _ => AppTheme.Unspecified // Systeemthema
+            };
         }
     }
 }

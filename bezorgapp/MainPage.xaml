@@ -10,9 +10,9 @@
         <!-- Welkomsttekst voor de bezorger -->
         <Label 
             Text="Welkom, Bezorger!"
-            FontSize="24"
-            FontAttributes="Bold"
-            HorizontalOptions="Center" />
+            Style="{StaticResource TitleLabel}"
+            HorizontalOptions="Center"
+            Margin="0,0,0,20" />
 
         <!-- Grid met drie knoppen naast elkaar -->
         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4" HorizontalOptions="FillAndExpand" VerticalOptions="Start">

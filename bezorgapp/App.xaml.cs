@@ -9,9 +9,14 @@ namespace bezorgapp
         {
             InitializeComponent();
 
-            // Haal de voorkeur voor donkere modus op en stel het thema in
-            bool isDarkMode = Preferences.Get("DarkModeEnabled", false);
-            UserAppTheme = isDarkMode ? AppTheme.Dark : AppTheme.Light;
+            // Haal de voorkeur voor thema op en stel het thema in
+            string theme = Preferences.Get("AppTheme", "System");
+            UserAppTheme = theme switch
+            {
+                "Light" => AppTheme.Light,
+                "Dark" => AppTheme.Dark,
+                _ => AppTheme.Unspecified // Systeemthema
+            };
 
             // Stel de hoofdpagina van de app in
             MainPage = new AppShell();
