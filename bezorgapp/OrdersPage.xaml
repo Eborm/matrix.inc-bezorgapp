@@ -7,14 +7,25 @@
     <!-- Hoofdgrid met een refresh-knop en de lijst met orders -->
     <Grid>
         <Grid RowDefinitions="Auto,*">
-            <!-- Ververs-knop voor het ophalen van de nieuwste orders -->
-            <Button x:Name="Refresh"
-                    Text="Ververs lijst"
-                    Clicked="OnRefreshClicked"
-                    Style="{StaticResource PrimaryButton}"
-                    HorizontalOptions="Center"
-                    Margin="0,20,0,10"
-                    Grid.Row="0" />
+            
+            <HorizontalStackLayout VerticalOptions="Start" HorizontalOptions="FillAndExpand" Padding="5, 40, 5, 20" Spacing="10">
+                <!-- Ververs-knop voor het ophalen van de nieuwste orders -->
+                <Button x:Name="Refresh"
+                        Text="Ververs lijst"
+                        Clicked="OnRefreshClicked"
+                        Style="{StaticResource PrimaryButton}"
+                        HorizontalOptions="Center"
+                        Margin="0,20,0,10"
+                        Grid.Row="0" />
+                
+                <!-- Picker menu voor sorteringskeuze -->
+                <Picker x:Name="SortOption"
+                        Title="Sort by"
+                        ItemDisplayBinding="{Binding SortName}"
+                        SelectedItem="{Binding SelectedSortation}"
+                        SelectedIndexChanged="OnSortationIndexChanged" />
+            </HorizontalStackLayout>
+            
             <!-- Lijst van bestellingen -->
             <CollectionView x:Name="OrdersCollectionView"
                             SelectionMode="None"
@@ -65,6 +76,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </Grid>
+        
         <!-- Laadindicator in het midden van het scherm -->
         <ActivityIndicator x:Name="loadingIndicator" IsRunning="True" IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" />
     </Grid>
