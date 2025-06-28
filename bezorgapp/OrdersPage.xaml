@@ -17,25 +17,28 @@
                         SelectedIndexChanged="OnSortationIndexChanged"
                         Style="{StaticResource PrimaryPicker}" />
                 
-                <HorizontalStackLayout VerticalOptions="Start" HorizontalOptions="FillAndExpand" Padding="5, 15, 5, 10" Spacing="5">
+                <Grid ColumnDefinitions="*,*"
+                      Padding="10,0"
+                      ColumnSpacing="10"
+                      HorizontalOptions="FillAndExpand">
                     <!-- Ververs-knop voor het ophalen van de nieuwste orders -->
                     <Button x:Name="Refresh"
+                            Grid.Column="0"
                             Text="Ververs Orders"
                             Clicked="OnRefreshClicked"
                             Style="{StaticResource PrimaryButton}"
-                            HorizontalOptions="Center"
-                            Margin="0,20,0,10"
-                            Grid.Row="0" />
+                            HorizontalOptions="FillAndExpand"
+                            Margin="0,20,0,10" />
                     
                     <!-- Knop voor het omdraaien van de sorteringsvolgorde -->
                     <Button x:Name="SortDirectionButton"
+                            Grid.Column="1"
                             Text="Draai sortering om"
                             Clicked="OnSortDirectionButtonClicked"
                             Style="{StaticResource PrimaryButton}"
-                            HorizontalOptions="Center"
-                            Margin="0,20,0,10"
-                            Grid.Row="0" />
-                </HorizontalStackLayout>
+                            HorizontalOptions="FillAndExpand"
+                            Margin="0,20,0,10" />
+                </Grid>
             </VerticalStackLayout>
             
             <!-- Lijst van bestellingen -->
