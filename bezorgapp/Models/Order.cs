@@ -9,5 +9,6 @@ public class Order
     
     [JsonPropertyName("customer")]
     public Customer Customer { get; set; }
+    
     public string DeliveryState { get; set; }
 }
