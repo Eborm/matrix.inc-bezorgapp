@@ -22,6 +22,11 @@ namespace bezorgapp
         
         // Huidig geselecteerde sorteeroptie
         public Sortation SelectedSortOption { get; set; }
+        
+        // Sorteringsrichting
+        public bool ReverseSort { get; set; }
+
+        public List<Order> Orders;
 
         public OrdersPage()
         {
@@ -33,9 +38,9 @@ namespace bezorgapp
             // Vul sorteeropties met gewenste opties
             _sortOptions = new List<Sortation>
             {
-                new Sortation { SortName = "Delivery State", SortFunc = o => o.DeliveryState },
-                new Sortation { SortName = "Customer Name", SortFunc = o => o.Customer.Name },
-                new Sortation { SortName = "Orer ID", SortFunc = o => o.Id }
+                new Sortation { SortName = "Sorteer naar: Bezorgingsstatus", SortFunc = o => o.DeliveryState },
+                new Sortation { SortName = "Sorteer naar: Customer Name", SortFunc = o => o.Customer.Name },
+                new Sortation { SortName = "Sorteer naar: Order ID", SortFunc = o => o.Id }
             };
 
             // Bind sorteringsopties aan picker in pagina
@@ -61,17 +66,11 @@ namespace bezorgapp
 
             try
             {
-                var orders = await _apiService.GetOrdersAsync(); // Haal orders op via de API
+                Orders = await _apiService.GetOrdersAsync(); // Haal orders op via de API
                 
-                // Kijk of een sorteringsfunctie was meegegeven
-                // zo ja, pas deze toe op de lijst orders
-                if (sortation != null)
-                {
-                    orders = orders.OrderBy(sortation).ToList();
-                }
+                ApplySorting(sortation);
                 
-                
-                OrdersCollectionView.ItemsSource = orders; // Toon de orders in de lijst
+                OrdersCollectionView.ItemsSource = Orders; // Toon de orders in de lijst
             }
             finally
             {
@@ -80,18 +79,57 @@ namespace bezorgapp
             }
         }
 
+        private void ApplySortingToPage(Func<Order, object>? sortation = null)
+        {
+            loadingIndicator.IsVisible = true; // Laat laadindicator zien
+            OrdersCollectionView.IsVisible = false; // Verberg de lijst tijdelijk
+            
+            ApplySorting(sortation);
+
+            OrdersCollectionView.ItemsSource = Orders;
+            
+            loadingIndicator.IsVisible = false; // Verberg laadindicator
+            OrdersCollectionView.IsVisible = true; // Toon de lijst weer
+        }
+
         // Als de gebruiker op de refresh-knop drukt, herlaad de data
         public async void OnRefreshClicked(object sender, EventArgs e)
         {
-            await LoadOrdersAsync();
+            await LoadOrdersAsync(SelectedSortOption.SortFunc);
         }
         
-        public async void OnSortationIndexChanged(object sender, EventArgs args)
+        public void OnSortationIndexChanged(object sender, EventArgs args)
         {
             if (SortOption.SelectedItem is Sortation selected)
             {
                 SelectedSortOption = selected;
-                await LoadOrdersAsync(selected.SortFunc);
+                ApplySortingToPage(SelectedSortOption.SortFunc);
+            }
+        }
+
+        public void OnSortDirectionButtonClicked(object sender, EventArgs args)
+        {
+            ReverseSort = !ReverseSort;
+            ApplySortingToPage(SelectedSortOption.SortFunc);
+        }
+
+        public void ApplySorting(Func<Order, Object>? sortation = null)
+        {
+            // Zorg ervoor dat de lijst van Orders niet null kan zijn
+            if (Orders == null || Orders.Count == 0)
+            {
+                return;
+            }
+            
+            // Kijk of een sorteringsfunctie was meegegeven
+            if (sortation != null && ReverseSort) // Wel omgekeerde sortering
+            {
+                Orders = Orders.OrderBy(sortation).ToList();
+                Orders.Reverse();
+            }
+            else if (sortation != null && !ReverseSort) // Geen omgekeerde sortering
+            {
+                Orders = Orders.OrderBy(sortation).ToList();
             }
         }
 

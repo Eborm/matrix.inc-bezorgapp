@@ -8,23 +8,35 @@
     <Grid>
         <Grid RowDefinitions="Auto,*">
             
-            <HorizontalStackLayout VerticalOptions="Start" HorizontalOptions="FillAndExpand" Padding="5, 40, 5, 20" Spacing="10">
-                <!-- Ververs-knop voor het ophalen van de nieuwste orders -->
-                <Button x:Name="Refresh"
-                        Text="Ververs lijst"
-                        Clicked="OnRefreshClicked"
-                        Style="{StaticResource PrimaryButton}"
-                        HorizontalOptions="Center"
-                        Margin="0,20,0,10"
-                        Grid.Row="0" />
-                
-                <!-- Picker menu voor sorteringskeuze -->
+            <VerticalStackLayout VerticalOptions="Start" HorizontalOptions="FillAndExpand" Padding="5, 15, 5, 10" Spacing="5">
+                <!-- Picker voor het kiezen van een order sorteringsoptie -->
                 <Picker x:Name="SortOption"
                         Title="Sort by"
                         ItemDisplayBinding="{Binding SortName}"
                         SelectedItem="{Binding SelectedSortation}"
-                        SelectedIndexChanged="OnSortationIndexChanged" />
-            </HorizontalStackLayout>
+                        SelectedIndexChanged="OnSortationIndexChanged"
+                        Style="{StaticResource PrimaryPicker}" />
+                
+                <HorizontalStackLayout VerticalOptions="Start" HorizontalOptions="FillAndExpand" Padding="5, 15, 5, 10" Spacing="5">
+                    <!-- Ververs-knop voor het ophalen van de nieuwste orders -->
+                    <Button x:Name="Refresh"
+                            Text="Ververs Orders"
+                            Clicked="OnRefreshClicked"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalOptions="Center"
+                            Margin="0,20,0,10"
+                            Grid.Row="0" />
+                    
+                    <!-- Knop voor het omdraaien van de sorteringsvolgorde -->
+                    <Button x:Name="SortDirectionButton"
+                            Text="Draai sortering om"
+                            Clicked="OnSortDirectionButtonClicked"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalOptions="Center"
+                            Margin="0,20,0,10"
+                            Grid.Row="0" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
             
             <!-- Lijst van bestellingen -->
             <CollectionView x:Name="OrdersCollectionView"

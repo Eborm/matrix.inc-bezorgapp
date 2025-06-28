@@ -12,6 +12,13 @@
         <Setter Property="HeightRequest" Value="50" />
         <Setter Property="Padding" Value="20,0" />
     </Style>
+    
+    <Style TargetType="Picker" x:Key="PrimaryPicker">
+        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="HeightRequest" Value="50" />
+    </Style>
 
     <Style TargetType="Button" x:Key="SecondaryButton" BasedOn="{StaticResource PrimaryButton}">
         <Setter Property="BackgroundColor" Value="{StaticResource Secondary}" />
